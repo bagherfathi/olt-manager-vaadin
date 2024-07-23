@@ -1,0 +1,182 @@
+show slot of frames:
+minimum frame is 0 and max 16
+zero is empty box
+just slotid 1 2 3 4 5 is important boardname ended with gpfd
+FLBA ARE CONTROL SLOTS
+
+
+
+FARDEASADI-OLT#display board 0
+  -------------------------------------------------------------------------
+  SlotID  BoardName  Status          SubType0 SubType1    Online/Offline
+  -------------------------------------------------------------------------
+  0
+  1       H805GPFD   Normal
+  2       H805GPFD   Normal
+  3       H805GPFD   Normal
+  4       H805GPFD   Normal
+  5       H805GPFD   Normal
+  6
+  7
+  8
+  9       H802SCUN   Active_normal   FLBA
+  10      H802SCUN   Standby_normal  FLBA
+  11
+
+
+
+
+
+
+if its GPFD, it has 16 ports 0 to 15 or gpbd 0 to 7
+
+
+
+
+slot with 8 ont
+FARDEASADI-OLT(config-if-gpon-0/5)#display ont info 1 all									// 0/5/1 is active and has 8 ont
+  -----------------------------------------------------------------------------
+  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
+          ID                     flag        state    state    state    side
+  -----------------------------------------------------------------------------
+  0/ 5/1    0  48575443DBA0A6A6  active      online   normal   match    no
+  0/ 5/1    1  48575443C033689D  active      online   normal   match    no
+  0/ 5/1    2  48575443C080FA9D  active      online   normal   mismatch no
+  0/ 5/1    3  4857544334A46373  active      online   normal   match    no
+  0/ 5/1    4  48575443D693A79C  active      online   normal   match    no
+  0/ 5/1    5  485754432E8E3F9B  active      online   normal   mismatch no
+  0/ 5/1    6  485754432EB1DD9B  active      online   normal   mismatch no
+  0/ 5/1    7  485754432EB6169B  active      offline  initial  initial  no
+
+
+
+
+
+
+
+
+
+slot without ont
+FARDEASADI-OLT(config-if-gpon-0/5)#display ont info 5
+{ all<K>|ontid<U><0,127> }:all
+
+  Command:
+          display ont info 5 all
+  In port 0/ 5/5 , the total of ONTs are: 0, online: 0                  // 0/5/5 has not any active ont
+  
+  
+  FARDEASADI-OLT(config-if-gpon-0/2)#display ont info 3 all
+  In port 0/ 2/3 , the total of ONTs are: 0, online: 0           // 0/2/3 is not active but output message is same as previous slot that is enable but doesnt have active ont
+  
+  
+  
+  
+  DISPLAY PORT STATE:
+  
+  FARDEASADI-OLT(config-if-gpon-0/2)#display port state all
+  ----------------------------------------------------------------------------
+  F/S/P                        0/2/0
+  Optical Module status        Online
+  Port state                   Online
+  Laser state                  Normal
+  Available bandwidth(Kbps)    1094254
+  Temperature(C)               46
+  TX Bias current(mA)          28
+  Supply Voltage(V)            3.21
+  TX power(dBm)                3.47
+  Illegal rogue ONT            Inexistent
+  Max Distance(Km)             20
+  Wave length(nm)              1490
+  Fiber type                   Single Mode
+  Length(9▒▒m)(km)             20.0
+  ----------------------------------------------------------------------------
+  F/S/P                        0/2/1
+  Optical Module status        Online
+  Port state                   Online
+  Laser state                  Normal
+  Available bandwidth(Kbps)    1068608
+  Temperature(C)               47
+  TX Bias current(mA)          26
+  Supply Voltage(V)            3.17
+  TX power(dBm)                3.64
+  Illegal rogue ONT            Inexistent
+  Max Distance(Km)             20
+  Wave length(nm)              1490
+  Fiber type                   Single Mode
+  Length(9▒▒m)(km)             20.0
+  ----------------------------------------------------------------------------
+  F/S/P                        0/2/2
+  Optical Module status        Online
+  Port state                   Online
+  Laser state                  Normal
+  Available bandwidth(Kbps)    1105568
+  Temperature(C)               45
+  TX Bias current(mA)          17
+  Supply Voltage(V)            3.24
+  TX power(dBm)                3.77
+  Illegal rogue ONT            Inexistent
+  Max Distance(Km)             40
+  Wave length(nm)              1490
+  Fiber type                   Single Mode
+  Length(9▒▒m)(km)             -
+  ----------------------------------------------------------------------------
+  F/S/P                        0/2/3
+  Optical Module status        Offline
+  Port state                   Offline
+
+  
+  
+  
+  
+  
+  
+  
+DISPLAY ALL ONTs UNDER A SPECIAL PORT:
+
+FARDEASADI-OLT(config-if-gpon-0/2)#display ont info 1 all     // THIS COMMAND SHOWS ALL ONTS UNDER 0/2/1  ITS NECCESSARY YOU MUST GO TO 0/2 BY RUNNING 1. CONFIG 2 INTERFACE GPON
+  -----------------------------------------------------------------------------
+  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
+          ID                     flag        state    state    state    side
+  -----------------------------------------------------------------------------
+  0/ 2/1    0  485754433B9FB99C  active      online   normal   mismatch no
+  0/ 2/1    1  48575443E6A0432A  active      offline  initial  initial  no
+  0/ 2/1    2  48575443B763EB2A  active      offline  initial  initial  no
+  0/ 2/1    3  48575443CAFD1A41  active      offline  initial  initial  no
+  0/ 2/1    4  48575443AEE058A7  active      online   normal   mismatch no
+  0/ 2/1    5  48575443DBAF6F8D  active      online   normal   match    no
+  0/ 2/1    6  48575443B797DA2A  active      offline  initial  initial  no
+  0/ 2/1    7  485754434624B89B  active      offline  initial  initial  no
+  0/ 2/1    8  485754437386328D  active      online   normal   match    no
+  0/ 2/1    9  485754438797D78A  active      offline  initial  initial  no
+  0/ 2/1   10  485754431F010D9B  active      online   normal   mismatch no
+  0/ 2/1   11  48575443015AF29A  active      offline  initial  initial  no
+  0/ 2/1   12  485754438B1A952A  active      online   normal   match    no
+  0/ 2/1   13  485754437F3BBC75  active      offline  initial  initial  no
+  0/ 2/1   14  485754431D21548A  active      online   normal   match    no
+  0/ 2/1   15  485754431E8C959B  active      online   normal   mismatch no
+  0/ 2/1   16  48575443AB1AE32A  active      online   normal   match    no
+  0/ 2/1   17  48575443B00F6796  active      online   normal   match    no
+  0/ 2/1   18  48575443B00EB196  active      online   normal   match    no
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

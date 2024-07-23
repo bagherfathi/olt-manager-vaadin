@@ -1,0 +1,196 @@
+FARDEASADI-OLT>enable
+
+FARDEASADI-OLT#display ont autofind all
+   ----------------------------------------------------------------------------
+   Number              : 1
+   F/S/P               : 0/1/10
+   Ont SN              : 485754431B25669B (HWTC-1B25669B)
+   Password            : 0x00000000000000000000
+   Loid                :
+   Checkcode           :
+   VendorID            : HWTC
+   Ont Version         : 1029.A
+   Ont SoftwareVersion : V3R017C10S138
+   Ont EquipmentID     : HG8245Q2
+   Ont autofind time   : 2024-07-18 06:15:07+04:30 DST
+   ----------------------------------------------------------------------------
+   Number              : 2
+   F/S/P               : 0/1/10
+   Ont SN              : 485754431BBA759B (HWTC-1BBA759B)
+   Password            : 0x00000000000000000000
+   Loid                :
+   Checkcode           :
+   VendorID            : HWTC
+   Ont Version         : 1029.A
+   Ont SoftwareVersion : V3R017C10S138
+   Ont EquipmentID     : HG8245Q2
+---- More ( Press 'Q' to break ) ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LIST OF ALL PROFILES:
+
+FARDEASADI-OLT#display ont-lineprofile gpon all
+  -----------------------------------------------------------------------------
+  Profile-ID  Profile-name                                Binding times
+  -----------------------------------------------------------------------------
+  0           line-profile_default_0                      0
+  1           HG-8240                                     781
+  2           LineProfile-M6_01                           83
+  3           DATA-MPLS                                   16
+  4           MPLS-SIP-VLAN2000                           27
+  100         Residential-In-700-800_17313010             0
+  101         Residential-Out-700-800_17313010            1
+  102         Commercial-700-800_17313010                 1
+  900         ACS                                         114
+  5603        MA5603T                                     0
+  5612        MA-5612                                     0
+  5616        MA5616                                      0
+  5818        MA5818                                      1
+  -----------------------------------------------------------------------------
+  Total: 13
+
+FARDEASADI-OLT#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+REGISTER OR ADD ONT:
+
+FARDEASADI-OLT#config
+
+FARDEASADI-OLT(config)#interface gpon 0/1     //frame/slot
+
+FARDEASADI-OLT(config-if-gpon-0/1)#
+
+
+
+
+
+
+LIST OF ONT IDs:
+
+FARDEASADI-OLT(config-if-gpon-0/1)#display ont info 10 all
+  -----------------------------------------------------------------------------
+  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
+          ID                     flag        state    state    state    side
+  -----------------------------------------------------------------------------
+  0/ 1/10   0  48575443015B209A  active      online   normal   match    no
+  0/ 1/10   1  48575443015BF69A  active      offline  initial  initial  no
+  0/ 1/10   2  4857544324B5CEC7  active      online   normal   match    no
+  0/ 1/10   3  485754433E0C512A  active      online   normal   match    no
+  0/ 1/10   4  485754434188AB8D  active      online   normal   match    no
+  0/ 1/10   5  485754434D57AE9B  active      online   normal   match    no
+  0/ 1/10   6  4857544350EBBB9B  active      online   normal   match    no
+  0/ 1/10   7  485754435898DB28  active      online   normal   match    no
+  0/ 1/10   8  485754435D10127A  active      online   normal   mismatch no
+  0/ 1/10   9  485754437A830543  active      online   normal   match    no
+  0/ 1/10  10  485754437AD56F36  active      online   normal   match    no
+  0/ 1/10  11  4857544380AAFA9C  active      offline  initial  initial  no
+  0/ 1/10  12  4857544380CD432A  active      online   normal   match    no
+  0/ 1/10  13  4857544387E0283B  active      online   normal   match    no
+  0/ 1/10  14  485754438C6A49C7  active      online   normal   match    no
+  0/ 1/10  15  48575443A209EA64  active      online   normal   match    no
+  0/ 1/10  16  485754430E5F7D5F  active      online   normal   match    no
+  0/ 1/10  17  485754437F802275  active      online   normal   match    no
+  0/ 1/10  18  485754432BB96E9B  active      online   normal   mismatch no
+
+
+
+
+ONT ADD COMMAND:
+
+
+FARDEASADI-OLT(config-if-gpon-0/1)#ont add 10 29 sn-auth 485754431B25669B omci ont-lineprofile-id 900 ont-srvprofile-id 1 desc test-123
+
+
+
+
+LIST OF SERVICE PROFILE:
+
+FARDEASADI-OLT(config)#display ont-srvprofile gpon all
+  -----------------------------------------------------------------------------
+  Profile-ID  Profile-name                                Binding times
+  -----------------------------------------------------------------------------
+  0           srv-profile_default_0                       1
+  1           HG-8240                                     909
+  2           FTTH                                        1
+  930         ACS                                         112
+  -----------------------------------------------------------------------------
+  Total: 4
+
+
+
+
+SERVICE PORT DEFINITION:
+
+FARDEASADI-OLT(config)#SERVice-port  vlan 930 gpon 0/1/10 ont 29 gemport 930 multi-service user-vlan 930 tag-transform translate
+
+
+SET ACS PROFILE(USER PASS IP PORT ...):
+FARDEASADI-OLT(config-if-gpon-0/1)#ont tr069-server-config 10 29 profile-id 20
+
+
+
+
+
+INITIAL IP SETTING ON ONT :
+
+FARDEASADI-OLT(config-if-gpon-0/1)#ont ipconfig 10 29 ip-index 0 dhcp vlan 930 priority 0
+
