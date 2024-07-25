@@ -104,6 +104,7 @@ public class User {
     }
 
     public String getName() {
+//        System.out.println("name: " + name);
         return name;
     }
 
@@ -181,5 +182,12 @@ public class User {
 
     public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

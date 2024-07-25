@@ -35,11 +35,11 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        try {
-            System.out.println(telnetConnection("help","admin@localhost","admin","192.168.154.129"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.out.println(telnetConnection("help","admin@localhost","admin","192.168.154.129"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Bean

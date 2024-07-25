@@ -1,0 +1,11 @@
+package com.gohardani.oltmanager.repository;
+
+import com.gohardani.oltmanager.entity.Port;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface PortRepository extends JpaRepository<Port, Long> {
+    List<Port> findBySerialNumberContainingIgnoreCase(String serialNumber);
+
+}

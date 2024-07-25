@@ -16,8 +16,6 @@ import java.util.Set;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Olt implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -57,7 +55,7 @@ public class Olt implements Serializable {
     @JsonIgnoreProperties(value = { "olts", "sshCommands", "commandHistories" }, allowSetters = true)
     private OltType oltType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "olt")
