@@ -1,8 +1,10 @@
 package com.gohardani.oltmanager.ui.view;
 
 import com.gohardani.oltmanager.entity.Port;
+import com.gohardani.oltmanager.entity.Slot;
 import com.gohardani.oltmanager.entity.User;
 import com.gohardani.oltmanager.service.FrameService;
+import com.gohardani.oltmanager.service.PortService;
 import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
@@ -18,10 +20,11 @@ import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "port", layout = MainLayout.class)
 public class PortView extends VerticalLayout {
+    private final PortService portService;
 
 //    private final UserService userService;
 
-    public PortView(FrameService frameService, UserService userService, SlotService slotService) {
+    public PortView(UserService userService, SlotService slotService, PortService portService) {
         // crud instance
         GridCrud<Port> crud = new GridCrud<>(Port.class);
 
@@ -32,20 +35,20 @@ public class PortView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id", "F","S","P", "slotid", "boardName","status","subType0","subType1","onOff","user");
+        crud.getGrid().setColumns("id", "slot", "frameNo", "slotNo", "portNo", "ontID", "serialNumber","controlFlag","runState","configState","matchState", "protectSide", "user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration
         crud.getCrudFormFactory().setUseBeanValidation(true);
-        crud.getCrudFormFactory().setVisibleProperties( "frame","slotid", "boardName","status","subType0","subType1","onOff","user");
-        crud.getCrudFormFactory().setVisibleProperties(CrudOperation.ADD, "frame","slotid", "boardName","status","subType0","subType1","onOff","user");
+        crud.getCrudFormFactory().setVisibleProperties( "slot", "frameNo","slotNo","portNo", "ontID","serialNumber","controlFlag","runState","configState","matchState", "protectSide","user");
+        crud.getCrudFormFactory().setVisibleProperties(CrudOperation.ADD, "slotid", "frameNo","slotNo","portNo", "ontID","serialNumber","controlFlag","runState","configState","matchState", "protectSide","user");
 
-        crud.getCrudFormFactory().setFieldProvider("frame",
-                new ComboBoxProvider<>(frameService.findAll()));
-        crud.getCrudFormFactory().setFieldProvider("frame",
-                new ComboBoxProvider<>("FRAME", frameService.findAll(), new TextRenderer<>(Frame::getFrameNumberAsText), Frame::getFrameNumberAsText));
+        crud.getCrudFormFactory().setFieldProvider("slot",
+                new ComboBoxProvider<>(slotService.findAll()));
+        crud.getCrudFormFactory().setFieldProvider("slot",
+                new ComboBoxProvider<>("SLOT", slotService.findAll(), new TextRenderer<>(Slot::getSlotidAsText), Slot::getSlotidAsText));
 
-
+//
         crud.getCrudFormFactory().setFieldProvider("user",
                 new ComboBoxProvider<>(userService.findAll()));
         crud.getCrudFormFactory().setFieldProvider("user",
@@ -56,14 +59,15 @@ public class PortView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> slotService.findByNameContainingIgnoreCase(filter.getValue()),
-                slot -> slotService.save(slot),
-                slot -> slotService.save(slot),
-                slot -> slotService.delete(slot)
+                () -> portService.findBySerialNumberContainingIgnoreCase(filter.getValue()),
+                port -> portService.save(port),
+                port -> portService.save(port),
+                port -> portService.delete(port)
         );
 
         filter.addValueChangeListener(e -> crud.refreshGrid());
 //        this.userService = userService;
+        this.portService = portService;
     }
 
 }

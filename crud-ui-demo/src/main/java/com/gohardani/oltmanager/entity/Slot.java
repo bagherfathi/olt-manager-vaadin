@@ -66,6 +66,9 @@ public class Slot implements Serializable {
     public int getSlotid() {
         return slotid;
     }
+    public String getSlotidAsText() {
+        return Integer.toString(slotid);
+    }
 
     public void setSlotid(@NotNull int slotid) {
         this.slotid = slotid;

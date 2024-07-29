@@ -11,7 +11,7 @@ import java.util.List;
 public class PortService {
 
     private final PortRepository portRepository;
-    public List<Port> findByNameContainingIgnoreCase(String serialNumber) {
+    public List<Port> findBySerialNumberContainingIgnoreCase(String serialNumber) {
         return portRepository.findBySerialNumberContainingIgnoreCase(serialNumber);
     }
     public PortService(PortRepository portRepository) {
