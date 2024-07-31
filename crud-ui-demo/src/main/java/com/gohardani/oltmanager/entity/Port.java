@@ -1,16 +1,15 @@
 package com.gohardani.oltmanager.entity;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Port")
+@Table(name="port")
 public class Port implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -18,60 +17,70 @@ public class Port implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     private Slot slot;
 
-    @NotNull
-    @Column(name="frame")
-    private int frameNo;
+    @Column(name = "fsp")
+    @Size(max=20)
+    private String fsp;
 
-    @NotNull
-    @Column(name="slotNo")
-    private int slotNo;
+    @Column(name = "OpticalModuleStatus")
+    @Size(max=20)
+    private String opticalModuleStatus;
 
-    @NotNull
-    @Column(name="port")
-    private int portNo;
+    @Column(name = "PortState")
+    @Size(max=20)
+    private String portState;
 
-    @NotNull
-    @Column(name="ontID")
-    private int ontID;
+    @Column(name = "LaserState")
+    @Size(max=20)
+    private String laserState;
 
-    @NotNull
-    @Column(name="serialNumber")
-    @Size(max = 100)
-    private String serialNumber;
+    @Column(name = "AvailableBandwidth")
+    @Size(max=20)
+    private String availableBandwidth;
 
-    @Column(name="controlFlag")
-    @Size(max = 100)
-    private String controlFlag;
 
-    @Column(name="runState")
-    @Size(max = 100)
-    private String runState;
+    @Column(name = "temperature")
+    @Size(max=20)
+    private String temperature;
 
-    @Column(name="configState")
-    @Size(max = 100)
-    private String configState;
+    @Column(name = "TXBiasCurrent")
+    @Size(max=20)
+    private String TXBiasCurrent;
 
-    @Column(name="matchState")
-    @Size(max = 100)
-    private String matchState;
+    @Column(name = "supplyVoltage")
+    @Size(max=20)
+    private String supplyVoltage;
 
-    @Column(name="protectSide")
-    @Size(max = 100)
-    private String protectSide;
+    @Column(name = "TXPower")
+    @Size(max=20)
+    private String TXPower;
+
+    @Column(name = "illegalRogueONT")
+    @Size(max=20)
+    private String illegalRogueONT;
+
+    @Column(name = "maxDistance")
+    @Size(max=20)
+    private String maxDistance;
+
+    @Column(name = "waveLength")
+    @Size(max=20)
+    private String waveLength;
+
+    @Column(name = "fiberType")
+    @Size(max=20)
+    private String fiberType;
+
+    @Column(name = "length")
+    @Size(max=20)
+    private String length;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public Port() {
     }
 
     public Long getId() {
@@ -82,98 +91,134 @@ public class Port implements Serializable {
         this.id = id;
     }
 
-    public @NotNull Slot getSlot() {
+    public Slot getSlot() {
         return slot;
     }
 
-    public void setSlot(@NotNull Slot slot) {
+    public void setSlot(Slot slot) {
         this.slot = slot;
     }
 
-    @NotNull
-    public int getOntID() {
-        return ontID;
+    public @Size(max = 20) String getFsp() {
+        return fsp;
     }
 
-    public void setOntID(@NotNull int ontID) {
-        this.ontID = ontID;
+    public void setFsp(@Size(max = 20) String fsp) {
+        this.fsp = fsp;
     }
 
-    public @Size(max = 100) String getSerialNumber() {
-        return serialNumber;
+    public @Size(max = 20) String getOpticalModuleStatus() {
+        return opticalModuleStatus;
     }
 
-    public void setSerialNumber(@Size(max = 100) String serialNumber) {
-        this.serialNumber = serialNumber;
+    public void setOpticalModuleStatus(@Size(max = 20) String opticalModuleStatus) {
+        this.opticalModuleStatus = opticalModuleStatus;
     }
 
-    public @Size(max = 100) String getControlFlag() {
-        return controlFlag;
+    public @Size(max = 20) String getPortState() {
+        return portState;
     }
 
-    public void setControlFlag(@Size(max = 100) String controlFlag) {
-        this.controlFlag = controlFlag;
+    public void setPortState(@Size(max = 20) String portState) {
+        this.portState = portState;
     }
 
-    public @Size(max = 100) String getRunState() {
-        return runState;
+    public @Size(max = 20) String getLaserState() {
+        return laserState;
     }
 
-    public void setRunState(@Size(max = 100) String runState) {
-        this.runState = runState;
+    public void setLaserState(@Size(max = 20) String laserState) {
+        this.laserState = laserState;
     }
 
-    public @Size(max = 100) String getConfigState() {
-        return configState;
+    public @Size(max = 20) String getAvailableBandwidth() {
+        return availableBandwidth;
     }
 
-    public void setConfigState(@Size(max = 100) String configState) {
-        this.configState = configState;
+    public void setAvailableBandwidth(@Size(max = 20) String availableBandwidth) {
+        this.availableBandwidth = availableBandwidth;
     }
 
-    public @Size(max = 100) String getMatchState() {
-        return matchState;
+    public @Size(max = 20) String getTemperature() {
+        return temperature;
     }
 
-    public void setMatchState(@Size(max = 100) String matchState) {
-        this.matchState = matchState;
+    public void setTemperature(@Size(max = 20) String temperature) {
+        this.temperature = temperature;
     }
 
-    public @Size(max = 100) String getProtectSide() {
-        return protectSide;
+    public @Size(max = 20) String getTXBiasCurrent() {
+        return TXBiasCurrent;
     }
 
-    public void setProtectSide(@Size(max = 100) String protectSide) {
-        this.protectSide = protectSide;
+    public void setTXBiasCurrent(@Size(max = 20) String TXBiasCurrent) {
+        this.TXBiasCurrent = TXBiasCurrent;
     }
 
-    public Port() {}
-
-    @NotNull
-    public int getFrameNo() {
-        return frameNo;
+    public @Size(max = 20) String getSupplyVoltage() {
+        return supplyVoltage;
     }
 
-    public void setFrameNo(@NotNull int frameNo) {
-        this.frameNo = frameNo;
+    public void setSupplyVoltage(@Size(max = 20) String supplyVoltage) {
+        this.supplyVoltage = supplyVoltage;
     }
 
-    @NotNull
-    public int getSlotNo() {
-        return slotNo;
+    public @Size(max = 20) String getTXPower() {
+        return TXPower;
     }
 
-    public void setSlotNo(@NotNull int slotNo) {
-        this.slotNo = slotNo;
+    public void setTXPower(@Size(max = 20) String TXPower) {
+        this.TXPower = TXPower;
     }
 
-    @NotNull
-    public int getPortNo() {
-        return portNo;
+
+
+    public @Size(max = 20) String getIllegalRogueONT() {
+        return illegalRogueONT;
     }
 
-    public void setPortNo(@NotNull int portNo) {
-        this.portNo = portNo;
+    public void setIllegalRogueONT(@Size(max = 20) String illegalRogueONT) {
+        this.illegalRogueONT = illegalRogueONT;
+    }
+
+    public @Size(max = 20) String getMaxDistance() {
+        return maxDistance;
+    }
+
+    public void setMaxDistance(@Size(max = 20) String maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    public @Size(max = 20) String getWaveLength() {
+        return waveLength;
+    }
+
+    public void setWaveLength(@Size(max = 20) String waveLength) {
+        this.waveLength = waveLength;
+    }
+
+    public @Size(max = 20) String getFiberType() {
+        return fiberType;
+    }
+
+    public void setFiberType(@Size(max = 20) String fiberType) {
+        this.fiberType = fiberType;
+    }
+
+    public @Size(max = 20) String getLength() {
+        return length;
+    }
+
+    public void setLength(@Size(max = 20) String length) {
+        this.length = length;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -181,12 +226,12 @@ public class Port implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Port port = (Port) o;
-        return frameNo == port.frameNo && slotNo == port.slotNo && portNo == port.portNo && ontID == port.ontID && Objects.equals(id, port.id) && Objects.equals(slot, port.slot) && Objects.equals(serialNumber, port.serialNumber) && Objects.equals(controlFlag, port.controlFlag) && Objects.equals(runState, port.runState) && Objects.equals(configState, port.configState) && Objects.equals(matchState, port.matchState) && Objects.equals(protectSide, port.protectSide) && Objects.equals(user, port.user);
+        return Objects.equals(id, port.id) && Objects.equals(slot, port.slot) && Objects.equals(fsp, port.fsp) && Objects.equals(opticalModuleStatus, port.opticalModuleStatus) && Objects.equals(portState, port.portState) && Objects.equals(laserState, port.laserState) && Objects.equals(availableBandwidth, port.availableBandwidth) && Objects.equals(temperature, port.temperature) && Objects.equals(TXBiasCurrent, port.TXBiasCurrent) && Objects.equals(supplyVoltage, port.supplyVoltage) && Objects.equals(TXPower, port.TXPower) && Objects.equals(illegalRogueONT, port.illegalRogueONT) && Objects.equals(maxDistance, port.maxDistance) && Objects.equals(waveLength, port.waveLength) && Objects.equals(fiberType, port.fiberType) && Objects.equals(length, port.length) && Objects.equals(user, port.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, slot, frameNo, slotNo, portNo, ontID, serialNumber, controlFlag, runState, configState, matchState, protectSide, user);
+        return Objects.hash(id, slot, fsp, opticalModuleStatus, portState, laserState, availableBandwidth, temperature, TXBiasCurrent, supplyVoltage, TXPower, illegalRogueONT, maxDistance, waveLength, fiberType, length, user);
     }
 
     @Override
@@ -194,19 +239,21 @@ public class Port implements Serializable {
         return "Port{" +
                 "id=" + id +
                 ", slot=" + slot +
-                ", frameNo=" + frameNo +
-                ", slotNo=" + slotNo +
-                ", portNo=" + portNo +
-                ", ontID=" + ontID +
-                ", serialNumber='" + serialNumber + '\'' +
-                ", controlFlag='" + controlFlag + '\'' +
-                ", runState='" + runState + '\'' +
-                ", configState='" + configState + '\'' +
-                ", matchState='" + matchState + '\'' +
-                ", protectSide='" + protectSide + '\'' +
+                ", fsp='" + fsp + '\'' +
+                ", opticalModuleStatus='" + opticalModuleStatus + '\'' +
+                ", portState='" + portState + '\'' +
+                ", laserState='" + laserState + '\'' +
+                ", availableBandwidth='" + availableBandwidth + '\'' +
+                ", temperature='" + temperature + '\'' +
+                ", TXBiasCurrent='" + TXBiasCurrent + '\'' +
+                ", supplyVoltage='" + supplyVoltage + '\'' +
+                ", TXPower='" + TXPower + '\'' +
+                ", illegalRogueONT='" + illegalRogueONT + '\'' +
+                ", maxDistance='" + maxDistance + '\'' +
+                ", waveLength='" + waveLength + '\'' +
+                ", fiberType='" + fiberType + '\'' +
+                ", length='" + length + '\'' +
                 ", user=" + user +
                 '}';
     }
-
 }
-

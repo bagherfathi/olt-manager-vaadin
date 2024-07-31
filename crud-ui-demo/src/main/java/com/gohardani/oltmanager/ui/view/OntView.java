@@ -1,9 +1,9 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.entity.Port;
+import com.gohardani.oltmanager.entity.Ont;
 import com.gohardani.oltmanager.entity.Slot;
 import com.gohardani.oltmanager.entity.User;
-import com.gohardani.oltmanager.service.PortService;
+import com.gohardani.oltmanager.service.OntService;
 import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
@@ -17,30 +17,30 @@ import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
 @RolesAllowed({"ADMIN","USER"})
-@Route(value = "port", layout = MainLayout.class)
-public class PortView extends VerticalLayout {
-    private final PortService portService;
+@Route(value = "ont", layout = MainLayout.class)
+public class OntView extends VerticalLayout {
+    private final OntService ontService;
 
 //    private final UserService userService;
 
-    public PortView(UserService userService, SlotService slotService, PortService portService) {
+    public OntView(UserService userService, SlotService slotService, OntService ontService) {
         // crud instance
-        GridCrud<Port> crud = new GridCrud<>(Port.class);
+        GridCrud<Ont> crud = new GridCrud<>(Ont.class);
 
         // additional components
         TextField filter = new TextField();
-        filter.setPlaceholder("Filter by FSP");
+        filter.setPlaceholder("Filter by Serial Number");
         filter.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id", "slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");
+        crud.getGrid().setColumns("id", "slot", "frameNo", "slotNo", "portNo", "ontID", "serialNumber","controlFlag","runState","configState","matchState", "protectSide", "user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration
         crud.getCrudFormFactory().setUseBeanValidation(true);
-        crud.getCrudFormFactory().setVisibleProperties("slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");
-        crud.getCrudFormFactory().setVisibleProperties(CrudOperation.ADD,"slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");
+        crud.getCrudFormFactory().setVisibleProperties( "slot", "frameNo","slotNo","portNo", "ontID","serialNumber","controlFlag","runState","configState","matchState", "protectSide","user");
+        crud.getCrudFormFactory().setVisibleProperties(CrudOperation.ADD, "slotid", "frameNo","slotNo","portNo", "ontID","serialNumber","controlFlag","runState","configState","matchState", "protectSide","user");
 
         crud.getCrudFormFactory().setFieldProvider("slot",
                 new ComboBoxProvider<>(slotService.findAll()));
@@ -58,15 +58,15 @@ public class PortView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> portService.findByFspContainingIgnoreCase(filter.getValue()),
-                port -> portService.save(port),
-                port -> portService.save(port),
-                port -> portService.delete(port)
+                () -> ontService.findBySerialNumberContainingIgnoreCase(filter.getValue()),
+                ont -> ontService.save(ont),
+                ont -> ontService.save(ont),
+                ont -> ontService.delete(ont)
         );
 
         filter.addValueChangeListener(e -> crud.refreshGrid());
 //        this.userService = userService;
-        this.portService = portService;
+        this.ontService = ontService;
     }
 
 }

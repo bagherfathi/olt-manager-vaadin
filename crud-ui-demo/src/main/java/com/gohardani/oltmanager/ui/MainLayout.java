@@ -18,9 +18,6 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.gohardani.oltmanager.ui.view.*;
-import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -80,6 +77,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         addTab(FrameView.class);
         addTab(SlotView.class);
         addTab(PortView.class);
+        addTab(OntView.class);
         addTab(SSHCommandsView.class);
         addTab(CommandsHistoryView.class);
         addTab(RunCommandsView.class);

@@ -2,7 +2,6 @@ package com.gohardani.oltmanager.service;
 
 import com.gohardani.oltmanager.entity.Port;
 import com.gohardani.oltmanager.repository.PortRepository;
-import com.gohardani.oltmanager.repository.SlotRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,8 @@ import java.util.List;
 public class PortService {
 
     private final PortRepository portRepository;
-    public List<Port> findBySerialNumberContainingIgnoreCase(String serialNumber) {
-        return portRepository.findBySerialNumberContainingIgnoreCase(serialNumber);
+    public List<Port> findByFspContainingIgnoreCase(String fsp) {
+        return portRepository.findByFspContainingIgnoreCase(fsp);
     }
     public PortService(PortRepository portRepository) {
         this.portRepository = portRepository;
