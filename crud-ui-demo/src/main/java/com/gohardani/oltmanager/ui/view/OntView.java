@@ -65,7 +65,6 @@ public class OntView extends VerticalLayout {
                 ont -> ontService.save(ont),
                 ont -> ontService.delete(ont)
         );
-
         filter.addValueChangeListener(e -> crud.refreshGrid());
 //        this.userService = userService;
         this.ontService = ontService;
