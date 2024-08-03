@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.Utility;
 
 import com.gohardani.oltmanager.entity.Ont;
+import com.gohardani.oltmanager.entity.Port;
 import com.gohardani.oltmanager.entity.Slot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,81 @@ public class SSHOutputProcessor {
     private static final Logger log = LoggerFactory.getLogger(SSHOutputProcessor.class);
 
     public static void main(String[] args) {
-        String displayBoardI=" -------------------------------------------------------------------------\n" +
+        String displayPort = "  ----------------------------------------------------------------------------\n" +
+                "  F/S/P                        0/2/0\n" +
+                "  Optical Module status        Online\n" +
+                "  Port state                   Online\n" +
+                "  Laser state                  Normal\n" +
+                "  Available bandwidth(Kbps)    1094254\n" +
+                "  Temperature(C)               46\n" +
+                "  TX Bias current(mA)          28\n" +
+                "  Supply Voltage(V)            3.21\n" +
+                "  TX power(dBm)                3.47\n" +
+                "  Illegal rogue ONT            Inexistent\n" +
+                "  Max Distance(Km)             20\n" +
+                "  Wave length(nm)              1490\n" +
+                "  Fiber type                   Single Mode\n" +
+                "  Length(9▒▒m)(km)             20.0\n" +
+                "  ----------------------------------------------------------------------------\n" +
+                "  F/S/P                        0/2/1\n" +
+                "  Optical Module status        Online\n" +
+                "  Port state                   Online\n" +
+                "  Laser state                  Normal\n" +
+                "  Available bandwidth(Kbps)    1068608\n" +
+                "  Temperature(C)               47\n" +
+                "  TX Bias current(mA)          26\n" +
+                "  Supply Voltage(V)            3.17\n" +
+                "  TX power(dBm)                3.64\n" +
+                "  Illegal rogue ONT            Inexistent\n" +
+                "  Max Distance(Km)             20\n" +
+                "  Wave length(nm)              1490\n" +
+                "  Fiber type                   Single Mode\n" +
+                "  Length(9▒▒m)(km)             20.0\n" +
+                "  ----------------------------------------------------------------------------\n" +
+                "  F/S/P                        0/2/2\n" +
+                "  Optical Module status        Online\n" +
+                "  Port state                   Online\n" +
+                "  Laser state                  Normal\n" +
+                "  Available bandwidth(Kbps)    1105568\n" +
+                "  Temperature(C)               45\n" +
+                "  TX Bias current(mA)          17\n" +
+                "  Supply Voltage(V)            3.24\n" +
+                "  TX power(dBm)                3.77\n" +
+                "  Illegal rogue ONT            Inexistent\n" +
+                "  Max Distance(Km)             40\n" +
+                "  Wave length(nm)              1490\n" +
+                "  Fiber type                   Single Mode\n" +
+                "  Length(9▒▒m)(km)             -\n" +
+                "  ----------------------------------------------------------------------------\n" +
+                "  F/S/P                        0/2/3\n" +
+                "  Optical Module status        Offline\n" +
+                "  Port state                   Offline";
+
+        String displayont = "-----------------------------------------------------------------------------\n" +
+                "  F/S/P   ONT         SN         Control     Run      Config   Match    Protect\n" +
+                "          ID                     flag        state    state    state    side\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  0/ 2/1    0  485754433B9FB99C  active      online   normal   mismatch no\n" +
+                "  0/ 2/1    1  48575443E6A0432A  active      offline  initial  initial  no\n" +
+                "  0/ 2/1    2  48575443B763EB2A  active      offline  initial  initial  no\n" +
+                "  0/ 2/1    3  48575443CAFD1A41  active      offline  initial  initial  no\n" +
+                "  0/ 2/1    4  48575443AEE058A7  active      online   normal   mismatch no\n" +
+                "  0/ 2/1    5  48575443DBAF6F8D  active      online   normal   match    no\n" +
+                "  0/ 2/1    6  48575443B797DA2A  active      offline  initial  initial  no\n" +
+                "  0/ 2/1    7  485754434624B89B  active      offline  initial  initial  no\n" +
+                "  0/ 2/1    8  485754437386328D  active      online   normal   match    no\n" +
+                "  0/ 2/1    9  485754438797D78A  active      offline  initial  initial  no\n" +
+                "  0/ 2/1   10  485754431F010D9B  active      online   normal   mismatch no\n" +
+                "  0/ 2/1   11  48575443015AF29A  active      offline  initial  initial  no\n" +
+                "  0/ 2/1   12  485754438B1A952A  active      online   normal   match    no\n" +
+                "  0/ 2/1   13  485754437F3BBC75  active      offline  initial  initial  no\n" +
+                "  0/ 2/1   14  485754431D21548A  active      online   normal   match    no\n" +
+                "  0/ 2/1   15  485754431E8C959B  active      online   normal   mismatch no\n" +
+                "  0/ 2/1   16  48575443AB1AE32A  active      online   normal   match    no\n" +
+                "  0/ 2/1   17  48575443B00F6796  active      online   normal   match    no\n" +
+                "  0/ 2/1   18  48575443B00EB196  active      online   normal   match    no";
+
+        String displayBoardI = " -------------------------------------------------------------------------\n" +
                 "  SlotID  BoardName  Status          SubType0 SubType1    Online/Offline\n" +
                 "  -------------------------------------------------------------------------\n" +
                 "  0\n" +
@@ -26,64 +101,63 @@ public class SSHOutputProcessor {
                 "  9       H802SCUN   Active_normal   FLBA\n" +
                 "  10      H802SCUN   Standby_normal  FLBA\n" +
                 "  11\n";
-        getSlotList(displayBoardI);
+        ArrayList<Port> ports = new ArrayList<>();
+        ports=getPortList(displayPort);
+        for(Port p:ports)
+            System.out.println(p);
+//        getOntList(displayont);
+//        getSlotList(displayBoardI);
     }
+
     //process command: FARDEASADI-OLT# display board 0
     // or 1 or 2 or ...
     //return array of slots can be saved in slot entity
-    public static ArrayList<Slot> getSlotList(String command) {
-        ArrayList<Slot> slots=new ArrayList<>();
-        String[] commands=command.split("\n");
-         for(String s:commands)
-         {
-             if(s.contains("-------------------")) {
-                 System.out.println("dashes bypassed");
-                 continue;
-             }
-             if(s.trim().startsWith("SlotID"))
-             {
-                 System.out.println("header bypassed");
-                 continue;
-             }
-            if(s.trim().matches("[0-9].*")) {
-                Slot sl=new Slot();
+    public static ArrayList<Slot> getSlotList(String commandOutput) {
+        ArrayList<Slot> slots = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        for (String s : commands) {
+            if (s.contains("-------------------")) {
+                System.out.println("dashes bypassed");
+                continue;
+            }
+            if (s.trim().startsWith("SlotID")) {
+                System.out.println("header bypassed");
+                continue;
+            }
+            if (s.trim().matches("[0-9].*")) {
+                Slot sl = new Slot();
                 System.out.println(s);
-                String[] fields=s.trim().split("\\s+");
-                if(fields.length==1){
+                String[] fields = s.trim().split("\\s+");
+                if (fields.length == 1) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
-                }
-                else if(fields.length==2){
+                } else if (fields.length == 2) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                 }
-                if(fields.length==3) {
+                if (fields.length == 3) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                     sl.setStatus(fields[2]);
-                }
-                else if(fields.length==4) {
+                } else if (fields.length == 4) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                     sl.setStatus(fields[2]);
                     sl.setSubType0(fields[3]);
-                }
-                else if(fields.length==5) {
+                } else if (fields.length == 5) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                     sl.setStatus(fields[2]);
                     sl.setSubType0(fields[3]);
                     sl.setSubType1(fields[4]);
-                }
-                else if(fields.length==6) {
+                } else if (fields.length == 6) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                     sl.setStatus(fields[2]);
                     sl.setSubType0(fields[3]);
                     sl.setSubType1(fields[4]);
                     sl.setOnOff(fields[5]);
-                }
-                else
-                    System.out.println("error in parsing slots input command");
+                } else
+                    System.out.println("error in parsing slot command output");
                 slots.add(sl);
 //                for(String f:fields) {
 ////                    System.out.println(f);
@@ -91,73 +165,124 @@ public class SSHOutputProcessor {
 //                }
             }
 //            System.out.println(s);
-         }
-         return slots;
+        }
+        return slots;
     }
+
     //process command: FARDEASADI-OLT(config-if-gpon-0/5)# display ont info 1 all
     // or 1 or 2 or ...
     //return array of slots can be saved in slot entity
-    public static ArrayList<Ont> getOntList(String command) {
-        ArrayList<Ont> onts=new ArrayList<>();
-        String[] commands=command.split("\n");
-        for(String s:commands)
-        {
-            if(s.contains("-------------------")) {
-                System.out.println("dashes bypassed");
+    public static ArrayList<Ont> getOntList(String commandOutput) {
+        ArrayList<Ont> onts = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        for (String s : commands) {
+            if (s.contains("-------------------")) {
+                System.out.println("line of dashes bypassed");
                 continue;
             }
-            if(s.trim().startsWith("SlotID"))
-            {
-                System.out.println("header bypassed");
+            if (s.trim().startsWith("F/S/P")) {
+                System.out.println("header line 1, bypassed");
                 continue;
             }
-            if(s.trim().matches("[0-9].*")) {
-                Ont o=new Ont();
-                System.out.println(s);
-                String[] fields=s.trim().split("\\s+");
-                if(fields.length==1){
-//                    o.setSlotid(Integer.parseInt(fields[0]));
-                }
-                else if(fields.length==2){
-//                    sl.setSlotid(Integer.parseInt(fields[0]));
-//                    sl.setBoardName(fields[1]);
-                }
-                if(fields.length==3) {
-//                    sl.setSlotid(Integer.parseInt(fields[0]));
-//                    sl.setBoardName(fields[1]);
-//                    sl.setStatus(fields[2]);
-                }
-                else if(fields.length==4) {
-//                    sl.setSlotid(Integer.parseInt(fields[0]));
-//                    sl.setBoardName(fields[1]);
-//                    sl.setStatus(fields[2]);
-//                    sl.setSubType0(fields[3]);
-                }
-                else if(fields.length==5) {
-//                    sl.setSlotid(Integer.parseInt(fields[0]));
-//                    sl.setBoardName(fields[1]);
-//                    sl.setStatus(fields[2]);
-//                    sl.setSubType0(fields[3]);
-//                    sl.setSubType1(fields[4]);
-                }
-                else if(fields.length==6) {
-//                    sl.setSlotid(Integer.parseInt(fields[0]));
-//                    sl.setBoardName(fields[1]);
-//                    sl.setStatus(fields[2]);
-//                    sl.setSubType0(fields[3]);
-//                    sl.setSubType1(fields[4]);
-//                    sl.setOnOff(fields[5]);
-                }
-                else
-                    System.out.println("error in parsing onts input command");
-                onts.add(o);
-//                for(String f:fields) {
-////                    System.out.println(f);
-//
-//                }
+            if (s.trim().startsWith("ID")) {
+                System.out.println("header line 2, bypassed");
+                continue;
             }
-//            System.out.println(s);
+
+            String[] fields = s.trim().split("\\s+");
+//            System.out.println("field no:"+fields.length);
+
+            if (s.trim().matches("[0-9].*")) {
+//                System.out.println("line start with digit");
+                Ont o = new Ont();
+//                System.out.println(s);
+//                String[] fields = s.trim().split("\\s+");
+                if (fields.length == 9) {
+                    o.setFrameNo(Integer.parseInt(fields[0].replaceAll("/", " ").trim()));
+                    String[] ts = fields[1].trim().split("/");
+                    o.setSlotNo(Integer.parseInt(ts[0].trim()));
+                    o.setPortNo(Integer.parseInt(ts[1].trim()));
+                    o.setOntID(Integer.parseInt(fields[2].trim()));
+                    o.setSerialNumber(fields[3].trim());
+                    o.setControlFlag(fields[4].trim());
+                    o.setRunState(fields[5].trim());
+                    o.setConfigState(fields[6].trim());
+                    o.setMatchState(fields[7].trim());
+                    o.setProtectSide(fields[8].trim());
+                    onts.add(o);
+                } else
+                    System.out.println("error in parsing ont command output");
+            }
         }
         return onts;
     }
-}
+
+    //process command: FARDEASADI-OLT(config-if-gpon-0/5)# display ont info 1 all
+    // or 1 or 2 or ...
+    //return array of slots can be saved in slot entity
+    public static ArrayList<Port> getPortList(String commandOutput) {
+        ArrayList<Port> ports = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        Port p=null;
+        int s1=0;
+        for (String s : commands) {
+            if (s.contains("-------------------")) {
+                s1=1;
+                p = new Port();
+                continue;
+            }
+
+            if(s1==1) {
+                //port section
+                if (s.trim().startsWith("F/S/P")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setFsp(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Optical")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setOpticalModuleStatus(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Port")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setPortState(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Laser")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setLaserState(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Available")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setAvailableBandwidth(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Temperature")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setTemperature(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("TX Bias")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setTXBiasCurrent(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Supply")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setSupplyVoltage(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("TX power")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setTXPower(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Illegal")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setIllegalRogueONT(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Max")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setMaxDistance(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Wave")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setWaveLength(lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Fiber")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setFiberType(lineparts[lineparts.length - 2] + " " + lineparts[lineparts.length - 1]);
+                } else if (s.trim().startsWith("Length")) {
+                    String[] lineparts = s.trim().split("\\s+");
+                    p.setLength(lineparts[lineparts.length - 1]);
+                    ports.add(p);
+                    s1 = 0;
+                }
+            }
+        }
+        ports.add(p);
+        return ports;
+    }
+    }
+
