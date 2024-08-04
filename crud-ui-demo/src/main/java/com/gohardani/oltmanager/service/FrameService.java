@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.service;
 
 import com.gohardani.oltmanager.entity.Frame;
+import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.repository.FrameRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,32 @@ import java.util.List;
 public class FrameService {
 
     private final FrameRepository frameRepository;
+    public List<Frame> findByFrameNumberAndOltEquals(String frameNumber, Olt olt) {
+//        System.out.println("framenumber: " + frameNumber + ":" + frameNumber.length());
+        int f=-1;
+        try {
+            if (!frameNumber.isEmpty() && !frameNumber.trim().isEmpty())
+                f = Integer.parseInt(frameNumber);
+        }
+        catch (Exception e) {System.out.println(e);}
+        System.out.println(f + ":" + olt);
+        if(f==-1 && olt==null)
+            return frameRepository.findAll();
+        else if(f!=-1 && olt==null)
+            return frameRepository.findByFrameNumberEquals(f);
+        else if (f==-1 && olt!=null)
+            return frameRepository.findByOltEquals(olt);
+        else
+            return frameRepository.findByFrameNumberAndOltEquals(f,olt);
+
+    }
+    public List<Frame> findByOltEquals(Olt olt) {
+        if(olt==null)
+            return frameRepository.findAll();
+        else
+            return frameRepository.findByOltEquals(olt);
+
+    }
     public List<Frame> findByFrameNumberEquals(String frameNumber) {
 //        System.out.println("framenumber: " + frameNumber + ":" + frameNumber.length());
         int f=-1;

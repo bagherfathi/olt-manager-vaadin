@@ -1,12 +1,12 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.entity.Slot;
-import com.gohardani.oltmanager.entity.Frame;
-import com.gohardani.oltmanager.entity.User;
+import com.gohardani.oltmanager.entity.*;
+import com.gohardani.oltmanager.service.OltService;
 import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.FrameService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -22,10 +22,36 @@ public class SlotView extends VerticalLayout {
 
 //    private final UserService userService;
 
-    public SlotView(FrameService frameService, UserService userService, SlotService slotService) {
+    public SlotView(OltService oltService, FrameService frameService, UserService userService, SlotService slotService) {
         // crud instance
         GridCrud<Slot> crud = new GridCrud<>(Slot.class);
 
+        ComboBox<Olt> oltComboBox = new ComboBox<>();
+        ComboBox<Frame> frameComboBox = new ComboBox<>();
+
+        //olt filter
+        oltComboBox.setItems(oltService.findAll());
+        oltComboBox.setItemLabelGenerator(Olt::getName);
+        oltComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Olt olt = e.getValue();
+                frameComboBox.setItems(frameService.findByOltEquals(olt));
+                frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+            }
+            crud.refreshGrid();
+        });
+        oltComboBox.setPlaceholder("select OLT");
+        oltComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(oltComboBox);
+        //frame filter
+        frameComboBox.setItems(frameService.findAll());
+        frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+        frameComboBox.addValueChangeListener(e -> {
+            crud.refreshGrid();
+        });
+        frameComboBox.setPlaceholder("select Frame");
+        frameComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(frameComboBox);
         // additional components
         TextField filter = new TextField();
         filter.setPlaceholder("Filter by Board Name");

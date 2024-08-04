@@ -34,7 +34,9 @@ public class Application {
     private static Logger log = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
+        log.info("Application started");
         SpringApplication.run(Application.class, args);
+        log.info("Application started");
 //        try {
 //            System.out.println(telnetConnection("help","admin@localhost","admin","192.168.154.129"));
 //        } catch (Exception e) {
@@ -43,16 +45,16 @@ public class Application {
     }
 
     @Bean
-    public ApplicationListener<ContextRefreshedEvent> initDatabase(GroupService groupService, UserService userService,
+    public ApplicationListener<ContextRefreshedEvent> initDatabase(FrameService frameService, GroupService groupService, UserService userService,
                                                                    CategoryService categoryService, OltTypeService oltTypeService, OltService oltService,SshService sshService) {
         return event -> {
             if (oltTypeService.count() == 0) {
-                createDemoData(groupService, userService, categoryService,oltTypeService,oltService,sshService);
+                createDemoData(frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
             }
         };
     }
 
-    private void createDemoData(GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
+    private void createDemoData(FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
     ) {
         log.info("Creating demo data...");
 
@@ -106,29 +108,12 @@ public class Application {
             }
         }
         //olttype test data
-        OltType oltType=null;
-        Olt olt=null;
+        OltType oltType=fillOltType();
+        oltTypeService.save(oltType);
+        ArrayList<Olt> olts= fillOlt(oltService,oltType);
+        ArrayList<Frame> frames=fillFrame(frameService,oltService,olts);
         SshCommand sshCommand=null;
-        for(int i=1;i<10;i++){
-            oltType = new OltType();
-            oltType.setName("name" + i);
-            oltType.setCompany("company" + i);
-            oltType.setModel("model" + i);
-            oltTypeService.save(oltType);
-        }
         log.info("OLT types created");
-        //olt test data
-        for(int i=1;i<10;i++){
-            olt = new Olt();
-            olt.setName("name" + i);
-            olt.setIp("192.168.1.112");
-            olt.setPort(22);
-            olt.setSerialNumber("111111111111111111" + i);
-            olt.setUsername("bagher");
-            olt.setPassword("tbontb");
-            olt.setOltType(oltType);
-            oltService.save(olt);
-        }
         log.info("OLTs created");
         //sshcommand test data
         for(int i=1;i<10;i++){
@@ -143,5 +128,50 @@ public class Application {
 
         log.info("Demo data created.");
     }
-
+private OltType fillOltType() {
+    OltType oltType = new OltType();
+    oltType.setName("huawei");
+    oltType.setCompany("huawei");
+    oltType.setModel("ax2000");
+    return oltType;
+}
+private ArrayList<Olt> fillOlt(OltService oltService,OltType oltType) {
+    //olt test data
+    ArrayList<Olt> olts = new ArrayList<>();
+    Olt olt = new Olt();
+    olt.setName("farda asadi 1");
+    olt.setIp("1.1.1.1");
+    olt.setPort(22);
+    olt.setSerialNumber("111111111111111111111111111111");
+    olt.setUsername("bagher");
+    olt.setPassword("bagher");
+    olt.setOltType(oltType);
+    oltService.save(olt);
+    olts.add(olt);
+    olt = new Olt();
+    olt.setName("farda asadi 2");
+    olt.setIp("1.1.1.2");
+    olt.setPort(22);
+    olt.setSerialNumber("22222222222222222222222222222222");
+    olt.setUsername("bagher");
+    olt.setPassword("bagher");
+    olt.setOltType(oltType);
+    oltService.save(olt);
+    olts.add(olt);
+    return olts;
+}
+private ArrayList<Frame> fillFrame(FrameService frameService, OltService oltService,ArrayList<Olt>  olts){
+        ArrayList<Frame> frames = new ArrayList<>();
+        Frame frame = new Frame();
+        frame.setFrameNumber(5);
+        frame.setOlt(olts.get(0));
+        frameService.save(frame);
+        frames.add(frame);
+        frame = new Frame();
+        frame.setFrameNumber(2);
+        frame.setOlt(olts.get(1));
+        frameService.save(frame);
+        frames.add(frame);
+        return frames;
+}
 }

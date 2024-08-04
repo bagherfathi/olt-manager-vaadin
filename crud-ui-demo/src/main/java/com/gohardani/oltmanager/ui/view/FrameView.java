@@ -1,12 +1,14 @@
 package com.gohardani.oltmanager.ui.view;
 
 import com.gohardani.oltmanager.entity.Frame;
+import com.gohardani.oltmanager.entity.SshCommand;
 import com.gohardani.oltmanager.entity.User;
 import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.service.FrameService;
 import com.gohardani.oltmanager.service.OltService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -26,7 +28,17 @@ public class FrameView extends VerticalLayout {
         // crud instance
         GridCrud<Frame> crud = new GridCrud<>(Frame.class);
 
-        // additional components
+        //olt filter
+        ComboBox<Olt> oltComboBox = new ComboBox<>();
+        oltComboBox.setItems(oltService.findAll());
+        oltComboBox.setItemLabelGenerator(Olt::getName);
+        oltComboBox.addValueChangeListener(e -> {
+                        crud.refreshGrid();
+                });
+            oltComboBox.setPlaceholder("select OLT");
+            oltComboBox.setClearButtonVisible(true);
+            crud.getCrudLayout().addFilterComponent(oltComboBox);
+                // additional components
         TextField filter = new TextField();
         filter.setPlaceholder("Filter by frame number");
         filter.setClearButtonVisible(true);
@@ -57,7 +69,7 @@ public class FrameView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> frameService.findByFrameNumberEquals(filter.getValue()),
+                () -> frameService.findByFrameNumberAndOltEquals(filter.getValue(),(Olt) oltComboBox.getValue()),
                 frame -> frameService.save(frame),
                 frame -> frameService.save(frame),
                 frame -> frameService.delete(frame)
