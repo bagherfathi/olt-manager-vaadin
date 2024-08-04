@@ -145,10 +145,7 @@ public class Slot implements Serializable {
 
     @Override
     public String toString() {
-        return "Slot{" +
-                "slotid=" + slotid +
-                ", boardName='" + boardName + '\'' +
-                '}';
+        return "slotid=" + slotid;
     }
 
 

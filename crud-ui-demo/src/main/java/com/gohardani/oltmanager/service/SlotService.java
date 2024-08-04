@@ -21,6 +21,9 @@ public class SlotService {
         else
             return slotRepository.findByBoardNameContainingIgnoreCaseAndFrameEquals(name,frame);
     }
+    public List<Slot> findByFrame(Frame frame) {
+        return slotRepository.findByFrameEquals(frame);
+    }
     public SlotService(SlotRepository slotRepository) {
         this.slotRepository = slotRepository;
     }

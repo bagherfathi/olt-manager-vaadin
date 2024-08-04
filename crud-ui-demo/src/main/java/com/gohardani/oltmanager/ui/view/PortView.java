@@ -1,12 +1,9 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.entity.Port;
-import com.gohardani.oltmanager.entity.Slot;
-import com.gohardani.oltmanager.entity.User;
-import com.gohardani.oltmanager.service.PortService;
-import com.gohardani.oltmanager.service.SlotService;
-import com.gohardani.oltmanager.service.UserService;
+import com.gohardani.oltmanager.entity.*;
+import com.gohardani.oltmanager.service.*;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -23,10 +20,50 @@ public class PortView extends VerticalLayout {
 
 //    private final UserService userService;
 
-    public PortView(UserService userService, SlotService slotService, PortService portService) {
+    public PortView(UserService userService, SlotService slotService, PortService portService, OltService oltService, FrameService frameService) {
         // crud instance
         GridCrud<Port> crud = new GridCrud<>(Port.class);
+        ComboBox<Olt> oltComboBox = new ComboBox<>();
+        ComboBox<Frame> frameComboBox = new ComboBox<>();
+        ComboBox<Slot> slotComboBox = new ComboBox<>();
 
+        //olt filter
+        oltComboBox.setItems(oltService.findAll());
+        oltComboBox.setItemLabelGenerator(Olt::getName);
+        oltComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Olt olt = e.getValue();
+                frameComboBox.setItems(frameService.findByOltEquals(olt));
+                frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+            }
+            crud.refreshGrid();
+        });
+        oltComboBox.setPlaceholder("select OLT");
+        oltComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(oltComboBox);
+        //frame filter
+        frameComboBox.setItems(frameService.findAll());
+        frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+        frameComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Frame frame = e.getValue();
+                slotComboBox.setItems(slotService.findByFrame(frame));
+                slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
+            }
+            crud.refreshGrid();
+        });
+        frameComboBox.setPlaceholder("select Frame");
+        frameComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(frameComboBox);
+        //slot filter
+        slotComboBox.setItems(slotService.findAll());
+        slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
+        slotComboBox.addValueChangeListener(e -> {
+            crud.refreshGrid();
+        });
+        slotComboBox.setPlaceholder("select Slot");
+        slotComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(slotComboBox);
         // additional components
         TextField filter = new TextField();
         filter.setPlaceholder("Filter by FSP");
@@ -58,7 +95,7 @@ public class PortView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> portService.findByFspContainingIgnoreCase(filter.getValue()),
+                () -> portService.findByFspContainingIgnoreCaseAndSlotEquals(filter.getValue(),(Slot) slotComboBox.getValue()),
                 port -> portService.save(port),
                 port -> portService.save(port),
                 port -> portService.delete(port)

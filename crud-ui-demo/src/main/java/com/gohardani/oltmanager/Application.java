@@ -45,16 +45,16 @@ public class Application {
     }
 
     @Bean
-    public ApplicationListener<ContextRefreshedEvent> initDatabase(SlotService slotService,FrameService frameService, GroupService groupService, UserService userService,
+    public ApplicationListener<ContextRefreshedEvent> initDatabase(PortService portService, SlotService slotService,FrameService frameService, GroupService groupService, UserService userService,
                                                                    CategoryService categoryService, OltTypeService oltTypeService, OltService oltService,SshService sshService) {
         return event -> {
             if (oltTypeService.count() == 0) {
-                createDemoData(slotService, frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
+                createDemoData(portService, slotService, frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
             }
         };
     }
 
-    private void createDemoData(SlotService slotService, FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
+    private void createDemoData(PortService portService, SlotService slotService, FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
     ) {
         log.info("Creating demo data...");
 
@@ -113,6 +113,7 @@ public class Application {
         ArrayList<Olt> olts= fillOlt(oltService,oltType);
         ArrayList<Frame> frames=fillFrame(frameService,oltService,olts);
         ArrayList<Slot> slots=fillSlot(frames,slotService);
+        ArrayList<Port> ports=fillPort(slots,portService);
         SshCommand sshCommand=null;
         log.info("OLT types created");
         log.info("OLTs created");
@@ -193,4 +194,22 @@ private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotServic
         slotService.save(slot);
         return slots;
 }
+    private ArrayList<Port> fillPort(ArrayList<Slot> slots, PortService portService) {
+        ArrayList<Port> ports = new ArrayList<>();
+        Port port = new Port();
+        port.setFsp("0/2/0");
+        port.setOpticalModuleStatus("online");
+        port.setLaserState("normal");
+        port.setSlot(slots.get(0));
+        ports.add(port);
+        portService.save(port);
+        port = new Port();
+        port.setFsp("0/2/1");
+        port.setOpticalModuleStatus("online");
+        port.setLaserState("normal");
+        port.setSlot(slots.get(1));
+        ports.add(port);
+        portService.save(port);
+        return ports;
+    }
 }
