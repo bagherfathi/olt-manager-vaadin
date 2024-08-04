@@ -45,16 +45,16 @@ public class Application {
     }
 
     @Bean
-    public ApplicationListener<ContextRefreshedEvent> initDatabase(FrameService frameService, GroupService groupService, UserService userService,
+    public ApplicationListener<ContextRefreshedEvent> initDatabase(SlotService slotService,FrameService frameService, GroupService groupService, UserService userService,
                                                                    CategoryService categoryService, OltTypeService oltTypeService, OltService oltService,SshService sshService) {
         return event -> {
             if (oltTypeService.count() == 0) {
-                createDemoData(frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
+                createDemoData(slotService, frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
             }
         };
     }
 
-    private void createDemoData(FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
+    private void createDemoData(SlotService slotService, FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
     ) {
         log.info("Creating demo data...");
 
@@ -112,6 +112,7 @@ public class Application {
         oltTypeService.save(oltType);
         ArrayList<Olt> olts= fillOlt(oltService,oltType);
         ArrayList<Frame> frames=fillFrame(frameService,oltService,olts);
+        ArrayList<Slot> slots=fillSlot(frames,slotService);
         SshCommand sshCommand=null;
         log.info("OLT types created");
         log.info("OLTs created");
@@ -173,5 +174,23 @@ private ArrayList<Frame> fillFrame(FrameService frameService, OltService oltServ
         frameService.save(frame);
         frames.add(frame);
         return frames;
+}
+private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotService) {
+        ArrayList<Slot> slots = new ArrayList<>();
+        Slot slot = new Slot();
+        slot.setSlotid(0);
+        slot.setBoardName("H805GPFD");
+        slot.setStatus("normal");
+        slot.setFrame(frames.get(0));
+        slots.add(slot);
+        slotService.save(slot);
+        slot = new Slot();
+        slot.setSlotid(1);
+        slot.setBoardName("H805GPFD");
+        slot.setStatus("normal");
+        slot.setFrame(frames.get(1));
+        slots.add(slot);
+        slotService.save(slot);
+        return slots;
 }
 }

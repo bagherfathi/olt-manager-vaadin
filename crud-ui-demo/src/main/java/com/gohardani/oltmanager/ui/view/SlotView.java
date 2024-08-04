@@ -83,7 +83,7 @@ public class SlotView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> slotService.findByNameContainingIgnoreCase(filter.getValue()),
+                () -> slotService.findByNameContainingIgnoreCaseOrEqualFrame(filter.getValue(),(Frame) frameComboBox.getValue()),
                 slot -> slotService.save(slot),
                 slot -> slotService.save(slot),
                 slot -> slotService.delete(slot)

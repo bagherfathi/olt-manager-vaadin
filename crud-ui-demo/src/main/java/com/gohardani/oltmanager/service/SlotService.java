@@ -1,5 +1,6 @@
 package com.gohardani.oltmanager.service;
 
+import com.gohardani.oltmanager.entity.Frame;
 import com.gohardani.oltmanager.entity.Slot;
 import com.gohardani.oltmanager.repository.SlotRepository;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,13 @@ public class SlotService {
     private final SlotRepository slotRepository;
     public List<Slot> findByNameContainingIgnoreCase(String name) {
         return slotRepository.findByBoardNameContainingIgnoreCase(name);
+    }
+    public List<Slot> findByNameContainingIgnoreCaseOrEqualFrame(String name, Frame frame) {
+        if(frame == null){
+            return slotRepository.findByBoardNameContainingIgnoreCase(name);
+        }
+        else
+            return slotRepository.findByBoardNameContainingIgnoreCaseAndFrameEquals(name,frame);
     }
     public SlotService(SlotRepository slotRepository) {
         this.slotRepository = slotRepository;

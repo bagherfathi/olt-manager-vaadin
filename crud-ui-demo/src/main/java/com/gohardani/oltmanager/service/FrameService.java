@@ -19,7 +19,7 @@ public class FrameService {
                 f = Integer.parseInt(frameNumber);
         }
         catch (Exception e) {System.out.println(e);}
-        System.out.println(f + ":" + olt);
+//        System.out.println(f + ":" + olt);
         if(f==-1 && olt==null)
             return frameRepository.findAll();
         else if(f!=-1 && olt==null)
