@@ -6,6 +6,7 @@ import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.FrameService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -44,7 +45,7 @@ public class SlotView extends VerticalLayout {
         oltComboBox.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(oltComboBox);
         //frame filter
-        frameComboBox.setItems(frameService.findAll());
+        frameComboBox.setItems(frameService.findByOltEquals((Olt) oltComboBox.getValue()));
         frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
         frameComboBox.addValueChangeListener(e -> {
             crud.refreshGrid();
@@ -57,6 +58,12 @@ public class SlotView extends VerticalLayout {
         filter.setPlaceholder("Filter by Board Name");
         filter.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(filter);
+
+
+        //import button
+        Button button = new Button("Import");
+        crud.getCrudLayout().addToolbarComponent(button);
+
 
         // grid configuration
         crud.getGrid().setColumns("id", "frame","slotid", "boardName","status","subType0","subType1","onOff","user");

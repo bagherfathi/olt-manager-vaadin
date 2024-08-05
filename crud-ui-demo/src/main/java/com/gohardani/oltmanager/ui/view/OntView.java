@@ -1,13 +1,10 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.entity.Ont;
-import com.gohardani.oltmanager.entity.Port;
-import com.gohardani.oltmanager.entity.User;
-import com.gohardani.oltmanager.service.OntService;
-import com.gohardani.oltmanager.service.PortService;
-import com.gohardani.oltmanager.service.SlotService;
-import com.gohardani.oltmanager.service.UserService;
+import com.gohardani.oltmanager.entity.*;
+import com.gohardani.oltmanager.service.*;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
@@ -25,15 +22,78 @@ public class OntView extends VerticalLayout {
 
 //    private final UserService userService;
 
-    public OntView(UserService userService, SlotService slotService, OntService ontService, PortService portService) {
+    public OntView(UserService userService, SlotService slotService, OntService ontService, PortService portService, OltService oltService,FrameService frameService) {
         // crud instance
         GridCrud<Ont> crud = new GridCrud<>(Ont.class);
+
+        ComboBox<Olt> oltComboBox = new ComboBox<>();
+        ComboBox<Frame> frameComboBox = new ComboBox<>();
+        ComboBox<Slot> slotComboBox = new ComboBox<>();
+        ComboBox<Port> portComboBox = new ComboBox<>();
+        //olt filter
+        oltComboBox.setItems(oltService.findAll());
+        oltComboBox.setItemLabelGenerator(Olt::getName);
+        oltComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Olt olt = e.getValue();
+                frameComboBox.setItems(frameService.findByOltEquals(olt));
+                frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+            }
+            crud.refreshGrid();
+        });
+        oltComboBox.setPlaceholder("select OLT");
+        oltComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(oltComboBox);
+        //frame filter
+        frameComboBox.setItems(frameService.findByOltEquals((Olt) oltComboBox.getValue()));
+        frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+        frameComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Frame frame = e.getValue();
+                slotComboBox.setItems(slotService.findByFrame(frame));
+                slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
+            }
+            crud.refreshGrid();
+        });
+        frameComboBox.setPlaceholder("select Frame");
+        frameComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(frameComboBox);
+        //slot filter
+        slotComboBox.setItems(slotService.findByFrame((Frame) frameComboBox.getValue()));
+        slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
+        slotComboBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Slot slot = e.getValue();
+                portComboBox.setItems(portService.findBySlotEquals(slot));
+                portComboBox.setItemLabelGenerator(Port::getFsp);
+            }
+            crud.refreshGrid();
+        });
+        slotComboBox.setPlaceholder("select Slot");
+        slotComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(slotComboBox);
+
+
+        //slot filter
+        portComboBox.setItems(portService.findBySlotEquals((Slot) slotComboBox.getValue()));
+        portComboBox.setItemLabelGenerator(Port::getFsp);
+        portComboBox.addValueChangeListener(e -> {
+            crud.refreshGrid();
+        });
+        portComboBox.setPlaceholder("select Port");
+        portComboBox.setClearButtonVisible(true);
+        crud.getCrudLayout().addFilterComponent(portComboBox);
 
         // additional components
         TextField filter = new TextField();
         filter.setPlaceholder("Filter by Serial Number");
         filter.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(filter);
+
+        //import button
+        Button button = new Button("Import");
+        crud.getCrudLayout().addToolbarComponent(button);
+
 
         // grid configuration
         crud.getGrid().setColumns("id", "port", "frameNo", "slotNo", "portNo", "ontID", "serialNumber","controlFlag","runState","configState","matchState", "protectSide", "user");
@@ -60,7 +120,7 @@ public class OntView extends VerticalLayout {
 
         // logic configuration
         crud.setOperations(
-                () -> ontService.findBySerialNumberContainingIgnoreCase(filter.getValue()),
+                () -> ontService.findBySerialNumberContainingIgnoreCaseAndPortEquals(filter.getValue(),(Port) portComboBox.getValue()),
                 ont -> ontService.save(ont),
                 ont -> ontService.save(ont),
                 ont -> ontService.delete(ont)

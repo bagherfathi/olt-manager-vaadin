@@ -45,17 +45,17 @@ public class Application {
     }
 
     @Bean
-    public ApplicationListener<ContextRefreshedEvent> initDatabase(PortService portService, SlotService slotService,FrameService frameService, GroupService groupService, UserService userService,
-                                                                   CategoryService categoryService, OltTypeService oltTypeService, OltService oltService,SshService sshService) {
+    public ApplicationListener<ContextRefreshedEvent> initDatabase(OntService ontService, PortService portService, SlotService slotService, FrameService frameService, GroupService groupService, UserService userService,
+                                                                   CategoryService categoryService, OltTypeService oltTypeService, OltService oltService, SshService sshService, LineProfileService lineProfileService, ServiceProfileService serviceProfileService) {
         return event -> {
             if (oltTypeService.count() == 0) {
-                createDemoData(portService, slotService, frameService, groupService, userService, categoryService,oltTypeService,oltService,sshService);
+                createDemoData(ontService, portService, slotService, frameService, groupService, userService, categoryService, oltTypeService, oltService, sshService, lineProfileService, serviceProfileService);
             }
         };
     }
 
-    private void createDemoData(PortService portService, SlotService slotService, FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService,OltTypeService oltTypeService, OltService oltService, SshService sshService
-    ) {
+    private void createDemoData(OntService ontService, PortService portService, SlotService slotService, FrameService frameService, GroupService groupService, UserService userService, CategoryService categoryService, OltTypeService oltTypeService, OltService oltService, SshService sshService
+            , LineProfileService lineProfileService, ServiceProfileService serviceProfileService) {
         log.info("Creating demo data...");
 
         Stream.of("Services,IT,HR,Management,Marketing,Sales,Operations,Finance".split(","))
@@ -94,11 +94,11 @@ public class Application {
                 })
                 .forEach(userService::save);
 
-        String[] languages = new String[] { "Java", "Javascript", "Dart" };
-        String[][] frameworks = new String[][] {
-                { "Vaadin", "Spring", "Guice" },
-                { "Hilla", "React", "Svelte" },
-                { "Flutter" }
+        String[] languages = new String[]{"Java", "Javascript", "Dart"};
+        String[][] frameworks = new String[][]{
+                {"Vaadin", "Spring", "Guice"},
+                {"Hilla", "React", "Svelte"},
+                {"Flutter"}
         };
 
         for (int i = 0; i < languages.length; i++) {
@@ -108,18 +108,21 @@ public class Application {
             }
         }
         //olttype test data
-        OltType oltType=fillOltType();
+        OltType oltType = fillOltType();
         oltTypeService.save(oltType);
-        ArrayList<Olt> olts= fillOlt(oltService,oltType);
-        ArrayList<Frame> frames=fillFrame(frameService,oltService,olts);
-        ArrayList<Slot> slots=fillSlot(frames,slotService);
-        ArrayList<Port> ports=fillPort(slots,portService);
-        SshCommand sshCommand=null;
+        ArrayList<Olt> olts = fillOlt(oltService, oltType);
+        ArrayList<Frame> frames = fillFrame(frameService, oltService, olts);
+        ArrayList<Slot> slots = fillSlot(frames, slotService);
+        ArrayList<Port> ports = fillPort(slots, portService);
+        ArrayList<Ont> onts = fillOnt(ports, ontService);
+        fillLineProfile(lineProfileService);
+        fillServiceProfile(serviceProfileService);
+        SshCommand sshCommand = null;
         log.info("OLT types created");
         log.info("OLTs created");
         //sshcommand test data
-        for(int i=1;i<10;i++){
-            sshCommand= new SshCommand();
+        for (int i = 1; i < 10; i++) {
+            sshCommand = new SshCommand();
             sshCommand.setName("name" + i);
             sshCommand.setOltType(oltType);
             sshCommand.setFixPart("ls ");
@@ -130,39 +133,42 @@ public class Application {
 
         log.info("Demo data created.");
     }
-private OltType fillOltType() {
-    OltType oltType = new OltType();
-    oltType.setName("huawei");
-    oltType.setCompany("huawei");
-    oltType.setModel("ax2000");
-    return oltType;
-}
-private ArrayList<Olt> fillOlt(OltService oltService,OltType oltType) {
-    //olt test data
-    ArrayList<Olt> olts = new ArrayList<>();
-    Olt olt = new Olt();
-    olt.setName("farda asadi 1");
-    olt.setIp("1.1.1.1");
-    olt.setPort(22);
-    olt.setSerialNumber("111111111111111111111111111111");
-    olt.setUsername("bagher");
-    olt.setPassword("bagher");
-    olt.setOltType(oltType);
-    oltService.save(olt);
-    olts.add(olt);
-    olt = new Olt();
-    olt.setName("farda asadi 2");
-    olt.setIp("1.1.1.2");
-    olt.setPort(22);
-    olt.setSerialNumber("22222222222222222222222222222222");
-    olt.setUsername("bagher");
-    olt.setPassword("bagher");
-    olt.setOltType(oltType);
-    oltService.save(olt);
-    olts.add(olt);
-    return olts;
-}
-private ArrayList<Frame> fillFrame(FrameService frameService, OltService oltService,ArrayList<Olt>  olts){
+
+    private OltType fillOltType() {
+        OltType oltType = new OltType();
+        oltType.setName("huawei");
+        oltType.setCompany("huawei");
+        oltType.setModel("ax2000");
+        return oltType;
+    }
+
+    private ArrayList<Olt> fillOlt(OltService oltService, OltType oltType) {
+        //olt test data
+        ArrayList<Olt> olts = new ArrayList<>();
+        Olt olt = new Olt();
+        olt.setName("farda asadi 1");
+        olt.setIp("1.1.1.1");
+        olt.setPort(22);
+        olt.setSerialNumber("111111111111111111111111111111");
+        olt.setUsername("bagher");
+        olt.setPassword("bagher");
+        olt.setOltType(oltType);
+        oltService.save(olt);
+        olts.add(olt);
+        olt = new Olt();
+        olt.setName("farda asadi 2");
+        olt.setIp("1.1.1.2");
+        olt.setPort(22);
+        olt.setSerialNumber("22222222222222222222222222222222");
+        olt.setUsername("bagher");
+        olt.setPassword("bagher");
+        olt.setOltType(oltType);
+        oltService.save(olt);
+        olts.add(olt);
+        return olts;
+    }
+
+    private ArrayList<Frame> fillFrame(FrameService frameService, OltService oltService, ArrayList<Olt> olts) {
         ArrayList<Frame> frames = new ArrayList<>();
         Frame frame = new Frame();
         frame.setFrameNumber(5);
@@ -175,8 +181,9 @@ private ArrayList<Frame> fillFrame(FrameService frameService, OltService oltServ
         frameService.save(frame);
         frames.add(frame);
         return frames;
-}
-private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotService) {
+    }
+
+    private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotService) {
         ArrayList<Slot> slots = new ArrayList<>();
         Slot slot = new Slot();
         slot.setSlotid(0);
@@ -193,7 +200,8 @@ private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotServic
         slots.add(slot);
         slotService.save(slot);
         return slots;
-}
+    }
+
     private ArrayList<Port> fillPort(ArrayList<Slot> slots, PortService portService) {
         ArrayList<Port> ports = new ArrayList<>();
         Port port = new Port();
@@ -211,5 +219,127 @@ private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotServic
         ports.add(port);
         portService.save(port);
         return ports;
+    }
+
+    private ArrayList<Ont> fillOnt(ArrayList<Port> ports, OntService ontService) {
+        ArrayList<Ont> onts = new ArrayList<>();
+        Ont ont = new Ont();
+        ont.setOntID(0);
+        ont.setRunState("online");
+        ont.setConfigState("normal");
+        ont.setProtectSide("no");
+        ont.setControlFlag("active");
+        ont.setPortNo(0);
+        ont.setSlotNo(0);
+        ont.setFrameNo(0);
+        ont.setSerialNumber("0000000000000000000000000000");
+        ont.setPort(ports.get(0));
+        onts.add(ont);
+        ontService.save(ont);
+        ont = new Ont();
+        ont.setOntID(1);
+        ont.setRunState("online");
+        ont.setConfigState("normal");
+        ont.setProtectSide("no");
+        ont.setControlFlag("active");
+        ont.setPortNo(1);
+        ont.setSlotNo(1);
+        ont.setFrameNo(1);
+        ont.setSerialNumber("11111111111111111111111111111111");
+        ont.setPort(ports.get(1));
+        onts.add(ont);
+        ontService.save(ont);
+        return onts;
+    }
+
+    private void fillLineProfile(LineProfileService lineProfileService) {
+        LineProfile lineProfile = new LineProfile();
+        lineProfile.setProfileID("0");
+        lineProfile.setProfileName("line-profile_default_0");
+        lineProfile.setBindingTimes("0");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("1");
+        lineProfile.setProfileName("HG-8240");
+        lineProfile.setBindingTimes("781");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("2");
+        lineProfile.setProfileName("LineProfile-M6_01");
+        lineProfile.setBindingTimes("83");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("3");
+        lineProfile.setProfileName("DATA-MPLS");
+        lineProfile.setBindingTimes("16");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("4");
+        lineProfile.setProfileName("MPLS-SIP-VLAN2000");
+        lineProfile.setBindingTimes("27");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("100");
+        lineProfile.setProfileName("Residential-In-700-800_17313010");
+        lineProfile.setBindingTimes("0");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("101");
+        lineProfile.setProfileName("Residential-Out-700-800_17313010");
+        lineProfile.setBindingTimes("1");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("102");
+        lineProfile.setProfileName("Commercial-700-800_17313010");
+        lineProfile.setBindingTimes("1");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("900");
+        lineProfile.setProfileName("ACS");
+        lineProfile.setBindingTimes("114");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("5603");
+        lineProfile.setProfileName("MA5603T");
+        lineProfile.setBindingTimes("0");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("5612");
+        lineProfile.setProfileName("MA-5612");
+        lineProfile.setBindingTimes("0");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("5616");
+        lineProfile.setProfileName("MA-5616");
+        lineProfile.setBindingTimes("0");
+        lineProfileService.save(lineProfile);
+        lineProfile = new LineProfile();
+        lineProfile.setProfileID("5618");
+        lineProfile.setProfileName("MA-5618");
+        lineProfile.setBindingTimes("1");
+        lineProfileService.save(lineProfile);
+    }
+    private void fillServiceProfile(ServiceProfileService serviceProfileService) {
+        ServiceProfile serviceProfile = new ServiceProfile();
+        serviceProfile.setProfileID("0");
+        serviceProfile.setProfileName("srv-profile_default_0");
+        serviceProfile.setBindingTimes("1");
+        serviceProfileService.save(serviceProfile);
+        serviceProfile = new ServiceProfile();
+        serviceProfile.setProfileID("1");
+        serviceProfile.setProfileName("HG-8240");
+        serviceProfile.setBindingTimes("909");
+        serviceProfileService.save(serviceProfile);
+        serviceProfile = new ServiceProfile();
+        serviceProfile.setProfileID("2");
+        serviceProfile.setProfileName("FTTH");
+        serviceProfile.setBindingTimes("1");
+        serviceProfileService.save(serviceProfile);
+        serviceProfile = new ServiceProfile();
+        serviceProfile.setProfileID("930");
+        serviceProfile.setProfileName("ACS");
+        serviceProfile.setBindingTimes("112");
+        serviceProfileService.save(serviceProfile);
+
     }
 }

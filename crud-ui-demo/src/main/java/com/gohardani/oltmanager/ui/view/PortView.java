@@ -3,6 +3,7 @@ package com.gohardani.oltmanager.ui.view;
 import com.gohardani.oltmanager.entity.*;
 import com.gohardani.oltmanager.service.*;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -42,7 +43,7 @@ public class PortView extends VerticalLayout {
         oltComboBox.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(oltComboBox);
         //frame filter
-        frameComboBox.setItems(frameService.findAll());
+        frameComboBox.setItems(frameService.findByOltEquals((Olt) oltComboBox.getValue()));
         frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
         frameComboBox.addValueChangeListener(e -> {
             if (e.getValue() != null) {
@@ -55,8 +56,9 @@ public class PortView extends VerticalLayout {
         frameComboBox.setPlaceholder("select Frame");
         frameComboBox.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(frameComboBox);
+
         //slot filter
-        slotComboBox.setItems(slotService.findAll());
+        slotComboBox.setItems(slotService.findByFrame((Frame) frameComboBox.getValue()));
         slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
         slotComboBox.addValueChangeListener(e -> {
             crud.refreshGrid();
@@ -69,6 +71,12 @@ public class PortView extends VerticalLayout {
         filter.setPlaceholder("Filter by FSP");
         filter.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(filter);
+
+
+        //add button
+        Button button = new Button("Import");
+        crud.getCrudLayout().addToolbarComponent(button);
+
 
         // grid configuration
         crud.getGrid().setColumns("id", "slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");

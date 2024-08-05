@@ -31,10 +31,7 @@ public class FrameService {
 
     }
     public List<Frame> findByOltEquals(Olt olt) {
-        if(olt==null)
-            return frameRepository.findAll();
-        else
-            return frameRepository.findByOltEquals(olt);
+        return frameRepository.findByOltEquals(olt);
 
     }
     public List<Frame> findByFrameNumberEquals(String frameNumber) {

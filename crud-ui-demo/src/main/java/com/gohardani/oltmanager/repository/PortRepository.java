@@ -10,4 +10,5 @@ import java.util.List;
 public interface PortRepository extends JpaRepository<Port, Long> {
     List<Port> findByFspContainingIgnoreCase(String fsp);
     List<Port> findByFspContainingIgnoreCaseAndSlotEquals(String fsp, Slot slot);
+    List<Port> findBySlotEquals(Slot slot);
 }

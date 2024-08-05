@@ -20,6 +20,9 @@ public class PortService {
         else
             return portRepository.findByFspContainingIgnoreCaseAndSlotEquals(fsp,slot);
     }
+    public List<Port> findBySlotEquals(Slot slot) {
+        return portRepository.findBySlotEquals(slot);
+    }
     public PortService(PortRepository portRepository) {
         this.portRepository = portRepository;
     }

@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.service;
 
 import com.gohardani.oltmanager.entity.Ont;
+import com.gohardani.oltmanager.entity.Port;
 import com.gohardani.oltmanager.repository.OntRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,12 @@ public class OntService {
     private final OntRepository ontRepository;
     public List<Ont> findBySerialNumberContainingIgnoreCase(String serialNumber) {
         return ontRepository.findBySerialNumberContainingIgnoreCase(serialNumber);
+    }
+    public List<Ont> findBySerialNumberContainingIgnoreCaseAndPortEquals(String serialNumber, Port port) {
+        if(port==null)
+            return ontRepository.findBySerialNumberContainingIgnoreCase(serialNumber);
+        else
+            return ontRepository.findBySerialNumberContainingIgnoreCaseAndPortEquals(serialNumber,port);
     }
     public OntService(OntRepository ontRepository) {
         this.ontRepository = ontRepository;
