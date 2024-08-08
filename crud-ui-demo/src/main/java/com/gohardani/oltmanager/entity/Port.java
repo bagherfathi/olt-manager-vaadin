@@ -256,4 +256,8 @@ public class Port implements Serializable {
                 ", user=" + user +
                 '}';
     }
+    public String getPortNumberAsString(){
+        String[] fspparts=getFsp().trim().split("/");
+        return fspparts[fspparts.length-1];
+    }
 }

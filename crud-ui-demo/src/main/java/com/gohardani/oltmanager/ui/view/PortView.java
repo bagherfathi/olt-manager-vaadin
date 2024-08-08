@@ -14,6 +14,12 @@ import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
+import java.util.ArrayList;
+
+import static com.gohardani.oltmanager.SSH.JavaTelnetsimulator.telnetConnection;
+import static com.gohardani.oltmanager.Utility.dialog.DialogModal.confirmDialog;
+import static com.gohardani.oltmanager.Utility.ssh.SSHOutputProcessor.*;
+
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "port", layout = MainLayout.class)
 public class PortView extends VerticalLayout {
@@ -75,6 +81,47 @@ public class PortView extends VerticalLayout {
 
         //add button
         Button button = new Button("Import");
+        button.addClickListener(clickEvent -> {
+            if (oltComboBox.getValue() == null) {
+                confirmDialog("Please Select an Olt");
+                return;
+            } else if(frameComboBox.getValue() == null){
+                confirmDialog("Please Select a Frame");
+                return;
+            } else if(slotComboBox.getValue() == null){
+                confirmDialog("Please Select a Slot");
+                return;
+            }
+            Olt olt = oltComboBox.getValue();
+            Frame frame = frameComboBox.getValue();
+            Slot slot = slotComboBox.getValue();
+            if (olt.getIp().trim().contains("1.1.1.8")) {
+                ArrayList<Port> ports=testGetPortList();
+                for (Port port : ports) {
+                    port.setSlot(slot);
+                    portService.save(port);
+                }
+            }
+            ArrayList<String> c=new ArrayList<>();
+            c.add("enable");
+            c.add("config");
+            c.add("interface gpon " +frame.getFrameNumberAsText() + " " + slot.getSlotid());
+            c.add("display port state all");
+            c.add("quit");
+            c.add("exit");
+            try {
+                String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
+                ArrayList<Port> ports=getPortList(s);
+                for (Port port : ports) {
+                    port.setSlot(slot);
+                    portService.save(port);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            crud.refreshGrid();
+        });
+
         crud.getCrudLayout().addToolbarComponent(button);
 
 
