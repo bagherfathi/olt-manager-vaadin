@@ -1,10 +1,8 @@
-package com.gohardani.oltmanager.SSH;
+package com.gohardani.oltmanager.SSH.drafts;
 
 import com.jcraft.jsch.*;
 
 import java.io.*;
-
-import static org.apache.commons.codec.Resources.getInputStream;
 
 public class SSHUtility2 {
 

@@ -165,6 +165,16 @@ public class Application {
         olt.setOltType(oltType);
         oltService.save(olt);
         olts.add(olt);
+        olt = new Olt();
+        olt.setName("simulator test");
+        olt.setIp("127.0.0.1");
+        olt.setPort(6001);
+        olt.setSerialNumber("3333333333333333333333333333333333");
+        olt.setUsername("admin");
+        olt.setPassword("admin");
+        olt.setOltType(oltType);
+        oltService.save(olt);
+        olts.add(olt);
         return olts;
     }
 
@@ -180,12 +190,24 @@ public class Application {
         frame.setOlt(olts.get(1));
         frameService.save(frame);
         frames.add(frame);
+        frame = new Frame();
+        frame.setFrameNumber(3);
+        frame.setOlt(olts.get(2));
+        frameService.save(frame);
+        frames.add(frame);
         return frames;
     }
 
     private ArrayList<Slot> fillSlot(ArrayList<Frame> frames, SlotService slotService) {
         ArrayList<Slot> slots = new ArrayList<>();
         Slot slot = new Slot();
+        slot.setSlotid(8);
+        slot.setFrame(frames.get(0));
+        slot.setBoardName("noName");
+
+        slots.add(slot);
+        slotService.save(slot);
+        slot = new Slot();
         slot.setSlotid(0);
         slot.setBoardName("H805GPFD");
         slot.setStatus("normal");

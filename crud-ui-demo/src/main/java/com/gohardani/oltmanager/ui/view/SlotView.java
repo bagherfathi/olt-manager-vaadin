@@ -17,6 +17,13 @@ import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
+import java.util.ArrayList;
+
+import static com.gohardani.oltmanager.SSH.JavaTelnetsimulator.telnetConnection;
+import static com.gohardani.oltmanager.Utility.dialog.DialogModal.confirmDialog;
+import static com.gohardani.oltmanager.Utility.ssh.SSHOutputProcessor.getSlotList;
+import static com.gohardani.oltmanager.Utility.ssh.SSHOutputProcessor.testGetSlotList;
+
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "slot", layout = MainLayout.class)
 public class SlotView extends VerticalLayout {
@@ -62,6 +69,43 @@ public class SlotView extends VerticalLayout {
 
         //import button
         Button button = new Button("Import");
+        button.addClickListener(clickEvent -> {
+                    if (oltComboBox.getValue() == null) {
+                        confirmDialog("Please Select an Olt");
+                        return;
+                    } else if(frameComboBox.getValue() == null){
+                        confirmDialog("Please Select a Frame");
+                        return;
+                    }
+                    Olt olt = oltComboBox.getValue();
+                    Frame frame = frameComboBox.getValue();
+                    if (olt.getIp().trim().contains("1.1.1.8")) {
+                        ArrayList<Slot> slots=testGetSlotList();
+                        for (Slot slot : slots) {
+                            slot.setFrame(frame);
+                            slotService.save(slot);
+                        }
+                    }
+                    ArrayList<String> c=new ArrayList<>();
+                    c.add("enable");
+                    c.add("display board");
+                    c.add("quit");
+                    c.add("exit");
+            try {
+                String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
+                ArrayList<Slot> slots=getSlotList(s);
+                for (Slot slot : slots) {
+                    slot.setFrame(frame);
+                    slotService.save(slot);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            crud.refreshGrid();
+                });
+
+
+
         crud.getCrudLayout().addToolbarComponent(button);
 
 

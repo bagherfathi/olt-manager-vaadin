@@ -1,6 +1,6 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.SSH.SSHUtility;
+import com.gohardani.oltmanager.SSH.drafts.SSHUtility;
 import com.gohardani.oltmanager.entity.CommandHistory;
 import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.entity.SshCommand;
@@ -9,17 +9,12 @@ import com.gohardani.oltmanager.service.OltService;
 import com.gohardani.oltmanager.service.OltTypeService;
 import com.gohardani.oltmanager.service.SshService;
 import com.gohardani.oltmanager.ui.MainLayout;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import org.vaadin.crudui.crud.CrudOperation;
-import org.vaadin.crudui.crud.impl.GridCrud;
-import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

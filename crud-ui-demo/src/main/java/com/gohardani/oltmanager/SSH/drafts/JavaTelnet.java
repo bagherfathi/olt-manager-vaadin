@@ -1,4 +1,4 @@
-package com.gohardani.oltmanager.SSH;
+package com.gohardani.oltmanager.SSH.drafts;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;

@@ -1,4 +1,4 @@
-package com.gohardani.oltmanager.Utility;
+package com.gohardani.oltmanager.Utility.ssh;
 
 import com.gohardani.oltmanager.entity.Ont;
 import com.gohardani.oltmanager.entity.Port;
@@ -108,10 +108,28 @@ public class SSHOutputProcessor {
 //        getOntList(displayont);
 //        getSlotList(displayBoardI);
     }
-
+    public static ArrayList<Slot> testGetSlotList(){
+        String displayBoardI = " -------------------------------------------------------------------------\n" +
+                "  SlotID  BoardName  Status          SubType0 SubType1    Online/Offline\n" +
+                "  -------------------------------------------------------------------------\n" +
+                "  0\n" +
+                "  1       H805GPFD   Normal\n" +
+                "  2       H805GPFD   Normal\n" +
+                "  3       H805GPFD   Normal\n" +
+                "  4       H805GPFD   Normal\n" +
+                "  5       H805GPFD   Normal\n" +
+                "  6\n" +
+                "  7\n" +
+                "  8\n" +
+                "  9       H802SCUN   Active_normal   FLBA\n" +
+                "  10      H802SCUN   Standby_normal  FLBA\n" +
+                "  11\n";
+        return getSlotList(displayBoardI);
+    }
     //process command: FARDEASADI-OLT# display board 0
     // or 1 or 2 or ...
     //return array of slots can be saved in slot entity
+
     public static ArrayList<Slot> getSlotList(String commandOutput) {
         ArrayList<Slot> slots = new ArrayList<>();
         String[] commands = commandOutput.split("\n");
@@ -129,12 +147,18 @@ public class SSHOutputProcessor {
                 System.out.println(s);
                 String[] fields = s.trim().split("\\s+");
                 if (fields.length == 1) {
-                    sl.setSlotid(Integer.parseInt(fields[0]));
+//                    for(String f:fields)
+//                        System.out.println("field---- " + f);
+//                    System.out.println("value of field:" +fields[0]);
+                    int j=Integer.parseInt(fields[0]);
+//                    System.out.println("value of j:" +j);
+
+                    sl.setSlotid(j);// a problem is here, when we just set slot id, repo cant save slot
+                    sl.setBoardName("NoName");// temporiraly resolve
                 } else if (fields.length == 2) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
-                }
-                if (fields.length == 3) {
+                } else if (fields.length == 3) {
                     sl.setSlotid(Integer.parseInt(fields[0]));
                     sl.setBoardName(fields[1]);
                     sl.setStatus(fields[2]);
@@ -157,7 +181,7 @@ public class SSHOutputProcessor {
                     sl.setSubType1(fields[4]);
                     sl.setOnOff(fields[5]);
                 } else
-                    System.out.println("error in parsing slot command output");
+                    System.out.println("error in parsing slot command output fiels len is:" + fields.length);
                 slots.add(sl);
 //                for(String f:fields) {
 ////                    System.out.println(f);

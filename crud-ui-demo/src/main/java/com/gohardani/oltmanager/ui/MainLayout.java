@@ -80,9 +80,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         addTab(OntView.class);
         addTab(LineProfileView.class);
         addTab(ServiceProfileView.class);
-        addTab(SSHCommandsView.class);
-        addTab(CommandsHistoryView.class);
-        addTab(RunCommandsView.class);
+//        addTab(SSHCommandsView.class);
+//        addTab(CommandsHistoryView.class);
+//        addTab(RunCommandsView.class);
     }
 
     private void tabsSelectionChanged(Tabs.SelectedChangeEvent event) {
