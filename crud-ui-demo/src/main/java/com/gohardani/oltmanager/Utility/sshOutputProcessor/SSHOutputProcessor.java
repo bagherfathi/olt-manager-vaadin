@@ -1,4 +1,4 @@
-package com.gohardani.oltmanager.Utility.ssh;
+package com.gohardani.oltmanager.Utility.sshOutputProcessor;
 
 import com.gohardani.oltmanager.entity.Ont;
 import com.gohardani.oltmanager.entity.Port;

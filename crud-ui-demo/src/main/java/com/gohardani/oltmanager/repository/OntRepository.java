@@ -9,5 +9,6 @@ import java.util.List;
 public interface OntRepository extends JpaRepository<Ont, Long> {
     List<Ont> findBySerialNumberContainingIgnoreCase(String serialNumber);
     List<Ont> findBySerialNumberContainingIgnoreCaseAndPortEquals(String serialNumber, Port port);
+    List<Ont> findByPortEquals(Port port);
 
 }

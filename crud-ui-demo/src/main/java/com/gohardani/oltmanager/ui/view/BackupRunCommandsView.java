@@ -1,6 +1,6 @@
 package com.gohardani.oltmanager.ui.view;
 
-import com.gohardani.oltmanager.SSH.drafts.SSHUtility;
+import com.gohardani.oltmanager.Utility.SSH.drafts.SSHUtility;
 import com.gohardani.oltmanager.entity.CommandHistory;
 import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.entity.SshCommand;
@@ -20,10 +20,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @RolesAllowed({"ADMIN","USER"})
-@Route(value = "runcommand", layout = MainLayout.class)
-public class RunCommandsView extends VerticalLayout {
+@Route(value = "runcommandbackup", layout = MainLayout.class)
+public class BackupRunCommandsView extends VerticalLayout {
 
-    public RunCommandsView(SshService sshService, OltTypeService oltTypeService, OltService oltService, CommandHistoryService commandHistoryService) {
+    public BackupRunCommandsView(SshService sshService, OltTypeService oltTypeService, OltService oltService, CommandHistoryService commandHistoryService) {
         ComboBox<Olt> oltComboBox = new ComboBox<>("olt");
         ComboBox<SshCommand> sshCommandComboBox = new ComboBox<>("sshCommand");
         oltComboBox.setItems(oltService.findAll());

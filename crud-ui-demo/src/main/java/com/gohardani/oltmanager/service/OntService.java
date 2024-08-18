@@ -24,6 +24,10 @@ public class OntService {
         this.ontRepository = ontRepository;
     }
 
+    public List<Ont> findByPortEquals(Port port) {
+        return ontRepository.findByPortEquals(port);
+    }
+
     public List<Ont> findAll() {
         return ontRepository.findAll();
     }

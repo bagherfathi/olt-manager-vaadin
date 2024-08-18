@@ -1,6 +1,5 @@
 package com.gohardani.oltmanager;
 
-import com.gohardani.oltmanager.SSH.JavaTelnetsimulator;
 import com.gohardani.oltmanager.entity.*;
 import com.gohardani.oltmanager.service.*;
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
-import com.gohardani.oltmanager.entity.*;
-import com.gohardani.oltmanager.service.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,8 +16,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static com.gohardani.oltmanager.SSH.JavaTelnetsimulator.telnetConnection;
 
 /**
  * The entry point of the Spring Boot application.
@@ -108,9 +103,11 @@ public class Application {
             }
         }
         //olttype test data
-        OltType oltType = fillOltType();
-        oltTypeService.save(oltType);
-        ArrayList<Olt> olts = fillOlt(oltService, oltType);
+        ArrayList<OltType> oltTypes = fillOltType();
+        for(OltType oltType:oltTypes)
+            oltTypeService.save(oltType);
+        ArrayList<Olt> olts = fillOlt(oltService, oltTypes);
+        ArrayList<SshCommand> sshCommands=fillSshCommand(oltTypes,sshService);
         ArrayList<Frame> frames = fillFrame(frameService, oltService, olts);
         ArrayList<Slot> slots = fillSlot(frames, slotService);
         ArrayList<Port> ports = fillPort(slots, portService);
@@ -121,28 +118,28 @@ public class Application {
         log.info("OLT types created");
         log.info("OLTs created");
         //sshcommand test data
-        for (int i = 1; i < 10; i++) {
-            sshCommand = new SshCommand();
-            sshCommand.setName("name" + i);
-            sshCommand.setOltType(oltType);
-            sshCommand.setFixPart("ls ");
-            sshCommand.setVarPart(" -l");
-            sshService.save(sshCommand);
-        }
+
         log.info("SshCommands created");
 
         log.info("Demo data created.");
     }
 
-    private OltType fillOltType() {
+    private ArrayList<OltType> fillOltType() {
+        ArrayList<OltType> oltTypes=new ArrayList<>();
         OltType oltType = new OltType();
         oltType.setName("huawei");
         oltType.setCompany("huawei");
         oltType.setModel("ax2000");
-        return oltType;
+        oltTypes.add(oltType);
+        oltType = new OltType();
+        oltType.setName("Eltex");
+        oltType.setCompany("Eltex");
+        oltType.setModel("el2000");
+        oltTypes.add(oltType);
+        return oltTypes;
     }
 
-    private ArrayList<Olt> fillOlt(OltService oltService, OltType oltType) {
+    private ArrayList<Olt> fillOlt(OltService oltService, ArrayList<OltType> oltTypes) {
         //olt test data
         ArrayList<Olt> olts = new ArrayList<>();
         Olt olt = new Olt();
@@ -152,7 +149,7 @@ public class Application {
         olt.setSerialNumber("111111111111111111111111111111");
         olt.setUsername("bagher");
         olt.setPassword("bagher");
-        olt.setOltType(oltType);
+        olt.setOltType(oltTypes.get(0));
         oltService.save(olt);
         olts.add(olt);
         olt = new Olt();
@@ -162,7 +159,7 @@ public class Application {
         olt.setSerialNumber("22222222222222222222222222222222");
         olt.setUsername("bagher");
         olt.setPassword("bagher");
-        olt.setOltType(oltType);
+        olt.setOltType(oltTypes.get(0));
         oltService.save(olt);
         olts.add(olt);
         olt = new Olt();
@@ -172,7 +169,7 @@ public class Application {
         olt.setSerialNumber("3333333333333333333333333333333333");
         olt.setUsername("admin");
         olt.setPassword("admin");
-        olt.setOltType(oltType);
+        olt.setOltType(oltTypes.get(0));
         oltService.save(olt);
         olts.add(olt);
         return olts;
@@ -202,7 +199,7 @@ public class Application {
         ArrayList<Slot> slots = new ArrayList<>();
         Slot slot = new Slot();
         slot.setSlotid(8);
-        slot.setFrame(frames.get(0));
+        slot.setFrame(frames.get(2));
         slot.setBoardName("noName");
 
         slots.add(slot);
@@ -273,7 +270,62 @@ public class Application {
         ontService.save(ont);
         return onts;
     }
-
+    private ArrayList<SshCommand> fillSshCommand(ArrayList<OltType> oltTypes,SshService sshService) {
+        ArrayList<SshCommand> sshCommands = new ArrayList<>();
+        //ont add
+        SshCommand sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(0));
+        sshCommand.setName("ont add");
+        sshCommand.setFixPart("ont add");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(1));
+        sshCommand.setName("ont add");
+        sshCommand.setFixPart("ont add");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        //service-port
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(0));
+        sshCommand.setName("vlan");
+        sshCommand.setFixPart("service-port");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(1));
+        sshCommand.setName("vlan");
+        sshCommand.setFixPart("service-port");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        //ipconfig
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(0));
+        sshCommand.setName("ipconfig");
+        sshCommand.setFixPart("ont ipconfig");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(1));
+        sshCommand.setName("ipconfig");
+        sshCommand.setFixPart("ont ipconfig");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        //tr069
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(0));
+        sshCommand.setName("tr069");
+        sshCommand.setFixPart("ont tr069-server-config");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        sshCommand = new SshCommand();
+        sshCommand.setOltType(oltTypes.get(1));
+        sshCommand.setName("tr069");
+        sshCommand.setFixPart("ont tr069-server-config");
+        sshCommands.add(sshCommand);
+        sshService.save(sshCommand);
+        return sshCommands;
+    }
     private void fillLineProfile(LineProfileService lineProfileService) {
         LineProfile lineProfile = new LineProfile();
         lineProfile.setProfileID("0");

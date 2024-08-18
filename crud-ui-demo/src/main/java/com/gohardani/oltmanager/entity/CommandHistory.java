@@ -35,7 +35,6 @@ public class CommandHistory implements Serializable {
     @Column(name = "result", length = 5000)
     private String result;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "user", "oltType", "commandHistories" }, allowSetters = true)
     private SshCommand sshCommand;

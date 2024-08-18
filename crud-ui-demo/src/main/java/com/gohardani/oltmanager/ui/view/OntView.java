@@ -16,9 +16,9 @@ import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
 import java.util.ArrayList;
 
-import static com.gohardani.oltmanager.SSH.JavaTelnetsimulator.telnetConnection;
+import static com.gohardani.oltmanager.Utility.SSH.JavaTelnetsimulator.telnetConnection;
 import static com.gohardani.oltmanager.Utility.dialog.DialogModal.confirmDialog;
-import static com.gohardani.oltmanager.Utility.ssh.SSHOutputProcessor.*;
+import static com.gohardani.oltmanager.Utility.sshOutputProcessor.SSHOutputProcessor.*;
 
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "ont", layout = MainLayout.class)
