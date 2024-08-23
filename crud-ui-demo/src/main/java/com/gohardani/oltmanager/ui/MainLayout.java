@@ -80,8 +80,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
         addTab(OntView.class);
         addTab(LineProfileView.class);
         addTab(ServiceProfileView.class);
-        addTab(SSHCommandsView.class);
+//        addTab(SSHCommandsView.class);
         addTab(ONTAddView.class);
+//        addTab(ServicePortView.class);
+//        addTab(OntTr069View.class);
+//        addTab(OntIpconfigView.class);
         addTab(CommandsHistoryView.class);
     }
 
