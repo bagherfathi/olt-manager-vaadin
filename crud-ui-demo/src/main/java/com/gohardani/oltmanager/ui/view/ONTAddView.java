@@ -92,9 +92,8 @@ public class ONTAddView extends VerticalLayout {
         add(info);
         add(addOntButton);
         info.setText("");
-//        HorizontalLayout hl2=new HorizontalLayout(addOntButton,servicePortButton,tr069Button,ipConfigButton,
-//                new Button("Cancel", this::cancel));
-//        add(hl2);
+        HorizontalLayout hl2=new HorizontalLayout(addOntButton,servicePortButton,tr069Button,ipConfigButton);
+        add(hl2);
     }
 
     private void OnServicePortButton(ClickEvent<Button> buttonClickEvent) {
