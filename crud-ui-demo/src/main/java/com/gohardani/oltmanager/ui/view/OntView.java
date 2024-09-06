@@ -147,7 +147,7 @@ public class OntView extends VerticalLayout {
 
 
         // grid configuration
-        crud.getGrid().setColumns("id", "port", "frameNo", "slotNo", "portNo", "ontID", "serialNumber","controlFlag","runState","configState","matchState", "protectSide", "user");
+        crud.getGrid().setColumns("port", "frameNo", "slotNo", "portNo", "ontID", "serialNumber","controlFlag","runState","configState","matchState", "protectSide", "user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

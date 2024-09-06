@@ -25,7 +25,7 @@ public class ServiceProfileView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id","profileID", "profileName", "bindingTimes");
+        crud.getGrid().setColumns("profileID", "profileName", "bindingTimes");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

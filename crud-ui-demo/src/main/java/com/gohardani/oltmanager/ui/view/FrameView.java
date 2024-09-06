@@ -45,7 +45,7 @@ public class FrameView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id", "olt","frameNumber", "description","user");
+        crud.getGrid().setColumns("olt","frameNumber", "description","user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

@@ -126,7 +126,7 @@ public class PortView extends VerticalLayout {
 
 
         // grid configuration
-        crud.getGrid().setColumns("id", "slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");
+        crud.getGrid().setColumns("slot", "fsp", "opticalModuleStatus", "portState", "laserState", "availableBandwidth","temperature","TXBiasCurrent","supplyVoltage","TXPower", "illegalRogueONT","maxDistance","waveLength","fiberType","length", "user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

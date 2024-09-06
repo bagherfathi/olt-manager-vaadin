@@ -29,7 +29,7 @@ public class OltView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id","name", "ip", "port","username","serialNumber","oltType","user");
+        crud.getGrid().setColumns("name", "ip", "port","username","serialNumber","oltType","user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

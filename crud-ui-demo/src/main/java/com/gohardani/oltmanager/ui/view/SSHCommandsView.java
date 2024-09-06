@@ -29,7 +29,7 @@ public class SSHCommandsView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id","name", "fixPart", "varPart","oltType","user");
+        crud.getGrid().setColumns("name", "fixPart", "varPart","oltType","user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

@@ -110,7 +110,7 @@ public class SlotView extends VerticalLayout {
 
 
         // grid configuration
-        crud.getGrid().setColumns("id", "frame","slotid", "boardName","status","subType0","subType1","onOff","user");
+        crud.getGrid().setColumns("frame","slotid", "boardName","status","subType0","subType1","onOff","user");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

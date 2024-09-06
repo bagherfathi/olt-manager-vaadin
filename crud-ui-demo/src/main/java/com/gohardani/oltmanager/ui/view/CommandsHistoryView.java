@@ -31,7 +31,7 @@ public class CommandsHistoryView extends VerticalLayout {
 //        crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration                              excecutionTime
-        crud.getGrid().setColumns("id","olt","sshCommand", "commandText", "result");
+        crud.getGrid().setColumns("olt","sshCommand", "commandText", "result");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration

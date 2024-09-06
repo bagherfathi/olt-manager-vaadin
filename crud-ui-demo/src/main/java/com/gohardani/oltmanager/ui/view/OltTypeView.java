@@ -25,7 +25,7 @@ public class OltTypeView extends VerticalLayout {
         crud.getCrudLayout().addFilterComponent(filter);
 
         // grid configuration
-        crud.getGrid().setColumns("id","name", "company", "model");
+        crud.getGrid().setColumns("name", "company", "model");
         crud.getGrid().setColumnReorderingAllowed(true);
 
         // form configuration
