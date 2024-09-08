@@ -1,0 +1,16 @@
+<settings>
+    <mirrors>
+        <mirror>
+            <id>vaadin-prereleases-unblocker</id>
+            <mirrorOf>central</mirrorOf>
+            <name></name>
+            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
+        </mirror>
+        <mirror>
+            <id>snapshot-http-unblocker</id>
+            <mirrorOf>snapshots</mirrorOf>
+            <name></name>
+            <url>http://my-url/libs-snapshot</url>
+        </mirror>
+    </mirrors>
+</settings>

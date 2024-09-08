@@ -1,0 +1,32 @@
+target/
+
+### Eclipse ###
+.classpath
+.project
+.settings
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### JRebel ###
+rebel.xml
+
+# Vaadin
+node_modules/
+drivers/
+error-screenshots/
+webpack.generated.js

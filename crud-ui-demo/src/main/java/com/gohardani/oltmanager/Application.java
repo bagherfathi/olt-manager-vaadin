@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 
 @SpringBootApplication
-public class Application {
+public class Application  {
 
     public static final int DEMO_USERS_COUNT = UserService.USERS_COUNT_LIMIT / 2;
 

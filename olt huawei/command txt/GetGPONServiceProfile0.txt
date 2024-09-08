@@ -1,0 +1,77 @@
+  -----------------------------------------------------------------------------
+  Profile-ID  : 1
+  Profile-name: 247H
+  Access-type : GPON
+  -----------------------------------------------------------------------------
+  Port-type     Port-number
+  -----------------------------------------------------------------------------
+  POTS          2
+  ETH           4
+  VDSL          0
+  TDM           0
+  MOCA          0
+  CATV          1
+  -----------------------------------------------------------------------------
+  TDM port type                     : E1
+  TDM service type                  : TDMoGem
+  MAC learning function switch      : Enable
+  ONT transparent function switch   : Disable
+  Ring check switch                 : Disable
+  Ring port auto-shutdown           : Enable
+  Ring detect frequency             : 8 (pps)
+  Ring resume interval              : 300 (s)
+  Multicast forward mode            : Unconcern
+[37D                                     [37D  Multicast forward VLAN            : -
+  Multicast mode                    : Unconcern
+  Upstream IGMP packet forward mode : Unconcern
+  Upstream IGMP packet forward VLAN : -
+  Upstream IGMP packet priority     : -
+  Native VLAN option                : Concern
+  Upstream PQ color policy          : -
+  Downstream PQ color policy        : -
+  -----------------------------------------------------------------------------
+  Port-type Port-ID QinQmode  PriorityPolicy Inbound     Outbound
+  -----------------------------------------------------------------------------
+  ETH       1       unconcern unconcern      unconcern   unconcern
+  ETH       2       unconcern unconcern      unconcern   unconcern
+  ETH       3       unconcern unconcern      unconcern   unconcern
+  ETH       4       unconcern unconcern      unconcern   unconcern
+  -----------------------------------------------------------------------------
+  Notes: Run the display traffic table ip command to query
+		 traffic table configuration
+  -----------------------------------------------------------------------------
+  Port-type Port-ID  DownstreamMode  MismatchPolicy
+  -----------------------------------------------------------------------------
+  ETH             1  operation       discard
+  ETH             2  operation       discard
+  ETH             3  operation       discard
+[37D                                     [37D  ETH             4  operation       discard
+  -----------------------------------------------------------------------------
+  Port-type Port-ID Dscp-mapping-table-index
+  -----------------------------------------------------------------------------
+  ETH       1       0
+  ETH       2       0
+  ETH       3       0
+  ETH       4       0
+  IPHOST    1       0
+  -----------------------------------------------------------------------------
+  Port   Port Service-type Index S-VLAN S-PRI C-VLAN C-PRI ENCAP      S-PRI
+  type   ID                                                           POLICY
+  -----------------------------------------------------------------------------
+  ETH    1    Translation  1     3333   -     3333   -     -          -
+  ETH    2    Translation  1     3333   -     3333   -     -          -
+  ETH    3    Translation  1     3333   -     3333   -     -          -
+  ETH    4    Translation  1     3333   -     3333   -     -          -
+  -----------------------------------------------------------------------------
+  Notes: * indicates transparent attribute of the vlan
+  -----------------------------------------------------------------------------
+  Port-type  Port-ID    IGMP-mode         IGMP-VLAN  IGMP-PRI  Max-MAC-Count
+  -----------------------------------------------------------------------------
+  ETH              1    -                         -         -      Unlimited
+  ETH              2    -                         -         -      Unlimited
+[37D                                     [37D  ETH              3    -                         -         -      Unlimited
+  ETH              4    -                         -         -      Unlimited
+  -----------------------------------------------------------------------------
+  Binding times : 2
+  -----------------------------------------------------------------------------
+MA5683T(config)#
