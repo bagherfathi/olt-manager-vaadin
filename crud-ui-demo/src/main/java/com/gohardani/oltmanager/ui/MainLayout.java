@@ -85,6 +85,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterN
 //        addTab(ServicePortView.class);
 //        addTab(OntTr069View.class);
 //        addTab(OntIpconfigView.class);
+        addTab(CommandsSetView.class);
         addTab(CommandsHistoryView.class);
     }
 
