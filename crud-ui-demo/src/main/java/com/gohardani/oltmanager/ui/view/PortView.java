@@ -105,10 +105,15 @@ public class PortView extends VerticalLayout {
             ArrayList<String> c=new ArrayList<>();
             c.add("enable");
             c.add("config");
-            c.add("interface gpon " +frame.getFrameNumberAsText() + " " + slot.getSlotid());
+            c.add("interface gpon " + frame.getFrameNumberAsText() + "/" + slot.getSlotidAsText());
             c.add("display port state all");
+            for(int i=0;i<20;i++)
+                c.add("\t");
+            c.add("\n\n\n");
             c.add("quit");
-            c.add("exit");
+            c.add("quit");
+            c.add("quit");
+            c.add("y");
             try {
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Port> ports=getPortList(s);

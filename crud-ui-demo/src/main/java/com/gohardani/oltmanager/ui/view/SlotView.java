@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.ui.view;
 
 import com.gohardani.oltmanager.entity.*;
+import com.gohardani.oltmanager.repository.SlotRepository;
 import com.gohardani.oltmanager.service.OltService;
 import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.FrameService;
@@ -88,10 +89,15 @@ public class SlotView extends VerticalLayout {
                     }
                     ArrayList<String> c=new ArrayList<>();
                     c.add("enable");
-                    c.add("display board");
+                    c.add("display board "+ frame.getFrameNumber());
+                    for(int i=0;i<10;i++)
+                        c.add("\t");
+                    c.add("\n\n\n");
                     c.add("quit");
-                    c.add("exit");
+                    c.add("y");
+//                    c.add("exit");
             try {
+//                slotService.deleteByFrame(frame);
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Slot> slots=getSlotList(s);
                 for (Slot slot : slots) {

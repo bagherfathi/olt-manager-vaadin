@@ -14,6 +14,8 @@ public class SlotService {
     public List<Slot> findByNameContainingIgnoreCase(String name) {
         return slotRepository.findByBoardNameContainingIgnoreCase(name);
     }
+    public void deleteByFrame(Frame frame) {
+        slotRepository.deleteByFrameEquals(frame);}
     public List<Slot> findByNameContainingIgnoreCaseOrEqualFrame(String name, Frame frame) {
         if(frame == null){
             return slotRepository.findByBoardNameContainingIgnoreCase(name);

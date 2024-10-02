@@ -2,7 +2,6 @@ package com.gohardani.oltmanager.ui.view;
 
 import com.gohardani.oltmanager.Utility.dialog.DialogModal;
 import com.gohardani.oltmanager.entity.*;
-import com.gohardani.oltmanager.repository.FrameRepository;
 import com.gohardani.oltmanager.service.*;
 import com.gohardani.oltmanager.ui.MainLayout;
 import com.vaadin.flow.component.AbstractField;
@@ -23,8 +22,8 @@ import static com.gohardani.oltmanager.Utility.ONTID.FreeOntID.getBiggestFreeOnt
 import static com.gohardani.oltmanager.Utility.SSH.JavaTelnetsimulator.telnetConnection;
 
 @RolesAllowed({"ADMIN","USER"})
-@Route(value = "ONTAdd", layout = MainLayout.class)
-public class ONTAddView extends VerticalLayout {
+@Route(value = "UnregisteredONT", layout = MainLayout.class)
+public class UnregisteredONTView extends VerticalLayout {
 
     private int freeBiggestOntID=-1;
 
@@ -53,7 +52,7 @@ public class ONTAddView extends VerticalLayout {
 
     private Paragraph info;
 
-    public ONTAddView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN) {
+    public UnregisteredONTView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN) {
         oltService = oltServiceIN;
         frameService = frameServiceIN;
         slotService = slotServiceIN;
@@ -344,8 +343,43 @@ public class ONTAddView extends VerticalLayout {
 
     private void OnOltCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Olt>, Olt> comboBoxOltComponentValueChangeEvent) {
         if (comboBoxOltComponentValueChangeEvent.getValue() != null) {
-            frameComboBox.setItems(frameService.findByOltEquals(comboBoxOltComponentValueChangeEvent.getValue()));
-            frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+//            frameComboBox.setItems(frameService.findByOltEquals(comboBoxOltComponentValueChangeEvent.getValue()));
+//            frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+            Olt olt=comboBoxOltComponentValueChangeEvent.getValue();
+            CommandHistory ch=new CommandHistory();
+            //code to run ssh
+            ArrayList<String> c=new ArrayList<>();
+            c.add("enable");
+            c.add("config");
+            c.add("display ont autofind all");
+            for(int i=0;i<20;i++)
+                c.add("\t");
+            c.add("\n\n\n");
+            c.add("quit");
+            c.add("quit");
+            c.add("y");
+            try {
+                String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
+                info.getStyle().set("color" ,"#00FF00");
+                info.setText("result: " + result);
+                ch.setCommandText("display ont autofind all");
+                ch.setResult(result);
+                ch.setOlt(olt);
+                ch.setOltType(olt.getOltType());
+                ch.setExcectionTime(ZonedDateTime.now(ZoneId.of("Asia/Tehran")));
+                ch = commandHistoryService.save(ch);
+            } catch (Exception e) {
+                info.getStyle().set("color" ,"#FF0000");
+                info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+                ch.setCommandText("display ont autofind all");
+                ch.setResult(e.getMessage());
+                ch.setOlt(olt);
+                ch.setOltType(olt.getOltType());
+                ch.setExcectionTime(ZonedDateTime.now(ZoneId.of("Asia/Tehran")));
+                ch = commandHistoryService.save(ch);
+                throw new RuntimeException(e);
+            }
+
         }
     }
 

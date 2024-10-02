@@ -69,7 +69,8 @@ public class OntView extends VerticalLayout {
         slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
         slotComboBox.addValueChangeListener(e -> {
             if (e.getValue() != null) {
-                Slot slot = e.getValue();
+                Slot slot = (Slot) e.getValue();
+//                confirmDialog(String.valueOf(portService.findBySlotEquals(slot).size()));
                 portComboBox.setItems(portService.findBySlotEquals(slot));
                 portComboBox.setItemLabelGenerator(Port::getFsp);
             }
@@ -125,10 +126,15 @@ public class OntView extends VerticalLayout {
             ArrayList<String> c=new ArrayList<>();
             c.add("enable");
             c.add("config");
-            c.add("interface gpon " +frame.getFrameNumberAsText() + " " + slot.getSlotid());
+            c.add("interface gpon " +frame.getFrameNumberAsText() + "/" + slot.getSlotidAsText());
             c.add("display ont info " + port.getPortNumberAsString()  + " all");
+            for(int i=0;i<30;i++)
+                c.add("\t");
+            c.add("\n\n\n");
             c.add("quit");
-            c.add("exit");
+            c.add("quit");
+            c.add("quit");
+            c.add("y");
             try {
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Ont> onts=getOntList(s);

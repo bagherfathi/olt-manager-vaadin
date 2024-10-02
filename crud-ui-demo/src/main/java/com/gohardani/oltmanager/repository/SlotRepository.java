@@ -10,6 +10,7 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findByBoardNameContainingIgnoreCase(String name);
     List<Slot> findByFrameEquals(Frame frame);
     List<Slot> findByBoardNameContainingIgnoreCaseAndFrameEquals(String name,Frame frame);
+    void deleteByFrameEquals(Frame frame);
 
 
 }

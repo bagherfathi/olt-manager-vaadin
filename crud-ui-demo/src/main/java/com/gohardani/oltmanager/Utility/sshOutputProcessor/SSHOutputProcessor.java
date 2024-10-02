@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.Utility.sshOutputProcessor;
 
 import com.gohardani.oltmanager.entity.Ont;
+import com.gohardani.oltmanager.entity.OntUnregistered;
 import com.gohardani.oltmanager.entity.Port;
 import com.gohardani.oltmanager.entity.Slot;
 import org.slf4j.Logger;
@@ -214,6 +215,13 @@ public class SSHOutputProcessor {
         ArrayList<Slot> slots = new ArrayList<>();
         String[] commands = commandOutput.split("\n");
         for (String s : commands) {
+            if(s.trim().startsWith("---- More")){
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.trim();
+            }
             if (s.contains("-------------------")) {
                 System.out.println("dashes bypassed");
                 continue;
@@ -221,6 +229,13 @@ public class SSHOutputProcessor {
             if (s.trim().startsWith("SlotID")) {
                 System.out.println("header bypassed");
                 continue;
+            }
+            if(s.trim().startsWith("---- More")){
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.trim();
             }
             if (s.trim().matches("[0-9].*")) {
                 Slot sl = new Slot();
@@ -280,6 +295,13 @@ public class SSHOutputProcessor {
         ArrayList<Ont> onts = new ArrayList<>();
         String[] commands = commandOutput.split("\n");
         for (String s : commands) {
+            if(s.trim().startsWith("---- More")){
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.trim();
+            }
             if (s.contains("-------------------")) {
                 System.out.println("line of dashes bypassed");
                 continue;
@@ -330,6 +352,13 @@ public class SSHOutputProcessor {
         Port p=null;
         int s1=0;
         for (String s : commands) {
+            if(s.trim().startsWith("---- More")){
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.trim();
+            }
             if (s.contains("-------------------")) {
                 s1=1;
                 p = new Port();
@@ -380,13 +409,82 @@ public class SSHOutputProcessor {
                 } else if (s.trim().startsWith("Length")) {
                     String[] lineparts = s.trim().split("\\s+");
                     p.setLength(lineparts[lineparts.length - 1]);
-                    ports.add(p);
+                    if(p.getPortNumberAsString()!=null && !p.getPortNumberAsString().isEmpty())
+                        ports.add(p);
                     s1 = 0;
                 }
             }
         }
-        ports.add(p);
+
         return ports;
     }
+    //enable
+    //config
+    //process command: FARDEASADI-OLT(config-if-gpon-0/5)# display ont autofind all
+    // or 1 or 2 or ...
+    //return array of onts can be saved in ontunregistered entity
+    public static ArrayList<OntUnregistered> getUnregisterdONTList(String commandOutput) {
+        ArrayList<OntUnregistered> ontus = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        OntUnregistered ount=null;
+        int s1=0;
+        for (String s : commands) {
+            if(s.trim().startsWith("---- More")){
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("----")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.substring(s.indexOf("[37D")+5);
+                s=s.trim();
+            }
+            if (s.contains("-------------------")) {
+                s1=1;
+                ount = new OntUnregistered();
+                continue;
+            }
+
+            if(s1==1) {
+                //port section
+                if (s.trim().startsWith("Number")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setNo(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("F/S/P")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setFsp(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Ont SN")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setSerialNumber(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Password")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setPassword(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Loid")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setLoid(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Checkcode")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setCheckcode(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("VendorID")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setVendorID(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Ont Version")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setOntVersion(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Ont SoftwareVersion")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setOntSoftwareVersion(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Ont EquipmentID")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setOntEquipmentID(lineparts[lineparts.length - 1].trim());
+                } else if (s.trim().startsWith("Ont autofind time")) {
+                    String[] lineparts = s.trim().split(":");
+                    ount.setOntAutofindTime(lineparts[lineparts.length - 1].trim());
+                    if(ount.getFsp()!=null && !ount.getFsp().isEmpty())
+                        ontus.add(ount);
+                    s1 = 0;
+                }
+            }
+        }
+        return ontus;
     }
+}
+
 

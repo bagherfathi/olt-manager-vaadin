@@ -1,5 +1,7 @@
 package com.gohardani.oltmanager.Utility.SSH;
 
+import com.gohardani.oltmanager.Utility.sshOutputProcessor.SSHOutputProcessor;
+import com.gohardani.oltmanager.entity.OntUnregistered;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -7,6 +9,7 @@ import com.jcraft.jsch.Session;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -17,10 +20,24 @@ public class JavaTelnetsimulator {
         try {
             ArrayList<String> c=new ArrayList<>();
             c.add("enable");
-            c.add("display board");
+            c.add("config");
+//            c.add("interface gpon " +frame.getFrameNumberAsText() + " " + slot.getSlotidAsText());
+//            c.add("display ont info " + port.getPortNumberAsString()  + " all");
+//            c.add("interface gpon " + "0" + "/" + "1");
+            c.add("display ont autofind all");
+            for(int i=0;i<30;i++)
+                c.add("\t");
+            c.add("\n\n\n");
+//            c.add("quit");
             c.add("quit");
-            c.add("exit");
-            System.out.println(telnetConnection(c,"admin","admin","192.168.154.129",6001));
+            c.add("quit");
+            c.add("y");
+//            System.out.println(telnetConnection(c,"acstest","acstest@123","10.61.8.2",22));
+            String result=telnetConnection(c,"acstest","acstest@123","10.61.8.2",22);
+            List<OntUnregistered> ontu= SSHOutputProcessor.getUnregisterdONTList(result);
+            for(OntUnregistered o:ontu)
+                System.out.println(o);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,50 +55,21 @@ public class JavaTelnetsimulator {
 
         Channel channel=session.openChannel("shell");
 
-        channel.connect(3000);
+        channel.connect(5000);
 
         DataInputStream dataIn = new DataInputStream(channel.getInputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataIn));
         DataOutputStream dataOut = new DataOutputStream(channel.getOutputStream());
-
-        System.out.println("Starting telnet connection...");
+        sleep(5000);
+        System.out.println("Starting SSH connection...");
         //run commands
         for(String command:commands){
-            dataOut.writeBytes(command+" \r\n");
+            dataOut.writeBytes(command +" \n");
             dataOut.flush();
             sleep(1000);
         }
-        //end run commands
-//        dataOut.writeBytes("help\r\n");
-//        dataOut.flush();
-//        sleep(1000);
-//        String result=read(reader);
-//      dataOut.writeBytes("enable\r\n");
-//        //       dataOut.writeBytes(command+"\r\n");
-//        dataOut.writeBytes("display ont summary ont\r\n"); //exit from telnet
-//        dataOut.flush();
-//        sleep(1000);
-//        result+=read(reader);
-//        dataOut.writeBytes("quit\r\n"); //exit from shell
-//        dataOut.flush();
-//        sleep(1000);
-////        result+=read(reader);
-//        dataOut.writeBytes("exit\r\n"); //exit from shell
-//        dataOut.flush();
-//        sleep(1000);
-//        result+=read(reader);
-        System.out.println("Flushing telnet...");
+        System.out.println("Flushing SSH...");
         String result=read(reader);
-//        String line = reader.readLine();
-//        String result = line +"\n";
-//        System.out.println(line);
-//        int i=0;
-//        while (!(line= reader.readLine()).equals("Connection closed by foreign host")){
-//            result += line +"\n";
-//            System.out.println(line);
-//            if(i++>20)
-//                break;
-//        }
 
         dataIn.close();
         dataOut.close();
@@ -100,7 +88,7 @@ public class JavaTelnetsimulator {
             System.out.println("cnt:" + cnt +" line:" + line);
             result +=line+"\r\n";
             cnt++;cnt2++;
-            if(cnt2>100 || cnt>100)
+            if(cnt2>1000 || cnt>1000)
                 break;
         }
         return result;
