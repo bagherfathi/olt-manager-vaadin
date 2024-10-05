@@ -26,6 +26,10 @@ public class SlotService {
     public List<Slot> findByFrame(Frame frame) {
         return slotRepository.findByFrameEquals(frame);
     }
+
+    public Slot findByFrameAndSlotID(Frame frame,Long slotID) {
+        return slotRepository.findByFrameEqualsAndSlotidEquals(frame,slotID);
+    }
     public SlotService(SlotRepository slotRepository) {
         this.slotRepository = slotRepository;
     }

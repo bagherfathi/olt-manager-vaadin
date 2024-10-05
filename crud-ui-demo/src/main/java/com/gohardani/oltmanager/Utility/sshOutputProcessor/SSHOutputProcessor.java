@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
+import static com.gohardani.oltmanager.Utility.dialog.DialogModal.confirmDialog;
+
 public class SSHOutputProcessor {
     private static final Logger log = LoggerFactory.getLogger(SSHOutputProcessor.class);
 
@@ -452,7 +454,8 @@ public class SSHOutputProcessor {
                     ount.setFsp(lineparts[lineparts.length - 1].trim());
                 } else if (s.trim().startsWith("Ont SN")) {
                     String[] lineparts = s.trim().split(":");
-                    ount.setSerialNumber(lineparts[lineparts.length - 1].trim());
+                    String[] sa=lineparts[lineparts.length - 1].split("\\(");
+                    ount.setSerialNumber(sa[0].trim());
                 } else if (s.trim().startsWith("Password")) {
                     String[] lineparts = s.trim().split(":");
                     ount.setPassword(lineparts[lineparts.length - 1].trim());

@@ -6,25 +6,31 @@ import com.gohardani.oltmanager.service.*;
 import com.gohardani.oltmanager.ui.MainLayout;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.gohardani.oltmanager.Utility.ONTID.FreeOntID.getBiggestFreeOntID;
 import static com.gohardani.oltmanager.Utility.SSH.JavaTelnetsimulator.telnetConnection;
+import static com.gohardani.oltmanager.Utility.dialog.DialogModal.confirmDialog;
+import static com.gohardani.oltmanager.Utility.sshOutputProcessor.SSHOutputProcessor.getUnregisterdONTList;
 
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "UnregisteredONT", layout = MainLayout.class)
 public class UnregisteredONTView extends VerticalLayout {
 
+    private final OntUnregisteredService ontUnregisteredService;
     private int freeBiggestOntID=-1;
 
     private OltService oltService;
@@ -38,10 +44,10 @@ public class UnregisteredONTView extends VerticalLayout {
     private ServiceProfileService serviceProfileService;
 
     private ComboBox<Olt> oltComboBox;
-    private ComboBox<Frame> frameComboBox;
-    private ComboBox<Slot> slotComboBox;
-    private ComboBox<Port> portComboBox;
-    private ComboBox<Ont> ontComboBox;
+    private TextField frameText;
+    private TextField slotText;
+    private TextField portText;
+    private ComboBox<OntUnregistered> ontUnregisteredComboBox;
     private ComboBox<LineProfile> lineProfileComboBox;
     private ComboBox<ServiceProfile> serviceProfileComboBox;
 
@@ -49,10 +55,11 @@ public class UnregisteredONTView extends VerticalLayout {
     private Button servicePortButton;
     private Button tr069Button;
     private Button ipConfigButton;
+    private Button filterButton;
 
     private Paragraph info;
 
-    public UnregisteredONTView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN) {
+    public UnregisteredONTView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN, OntUnregisteredService ontUnregisteredServiceIN) {
         oltService = oltServiceIN;
         frameService = frameServiceIN;
         slotService = slotServiceIN;
@@ -62,14 +69,20 @@ public class UnregisteredONTView extends VerticalLayout {
         commandHistoryService = commandHistoryServiceIN;
         lineProfileService = lineProfileServiceIN;
         serviceProfileService = serviceProfileServiceIN;
-
+        ontUnregisteredService = ontUnregisteredServiceIN;
         oltComboBox = new ComboBox<Olt>("olt",this::OnOltCBClick);
-        frameComboBox = new ComboBox<Frame>("frame",this::OnFrameCBClick);
-        slotComboBox = new ComboBox<Slot>("slot",this::OnSlotCBClick);
-        portComboBox = new ComboBox<Port>("port",this::OnPortCBClick);
-        ontComboBox = new ComboBox<Ont>("ONT",this::OnOntCBClick);
-        lineProfileComboBox = new ComboBox<LineProfile>("lineProfile",this::OnLineProfileCBClick);
-        serviceProfileComboBox = new ComboBox<ServiceProfile>("serviceProfile",this::OnServiceProfileCBClick);
+        frameText = new TextField("frame");
+        frameText.addValueChangeListener(this::OnFrameTextChanged);
+        slotText = new TextField("slot");
+        slotText.addValueChangeListener(this::OnSlotTextChanged);
+        portText = new TextField("port");
+        portText.addValueChangeListener(this::OnPortTextChanged);
+        frameText.setClearButtonVisible(true);
+        slotText.setClearButtonVisible(true);
+        portText.setClearButtonVisible(true);
+        ontUnregisteredComboBox = new ComboBox<OntUnregistered> ("ONT",this::OnOntCBClick);
+        lineProfileComboBox = new ComboBox<LineProfile>("lineProfile");
+        serviceProfileComboBox = new ComboBox<ServiceProfile>("serviceProfile");
         oltComboBox.setItems(oltService.findAll());
         oltComboBox.setItemLabelGenerator(Olt::getName);
 
@@ -78,7 +91,8 @@ public class UnregisteredONTView extends VerticalLayout {
 
         serviceProfileComboBox.setItems(serviceProfileService.findAll());
         serviceProfileComboBox.setItemLabelGenerator(ServiceProfile::getProfileName);
-        HorizontalLayout hl0 = new HorizontalLayout(oltComboBox, frameComboBox, slotComboBox, portComboBox, ontComboBox);
+        filterButton = new Button("Filter",this::onFilterClick);
+        HorizontalLayout hl0 = new HorizontalLayout(oltComboBox, frameText, slotText, portText,filterButton, ontUnregisteredComboBox);
         HorizontalLayout hl1=new HorizontalLayout(lineProfileComboBox, serviceProfileComboBox);
         add(hl0,hl1);
         addOntButton = new Button("Add ONT",this::OnAddOntButton);
@@ -88,11 +102,37 @@ public class UnregisteredONTView extends VerticalLayout {
 
         info = new Paragraph();
         info.getStyle().set("color" ,"#FF0000");
-        add(info);
-        add(addOntButton);
+//        add(addOntButton);
         info.setText("");
         HorizontalLayout hl2=new HorizontalLayout(addOntButton,servicePortButton,tr069Button,ipConfigButton);
         add(hl2);
+        add(info);
+    }
+
+    private void onFilterClick(ClickEvent<Button> buttonClickEvent) {
+        if(frameText.isEmpty() || slotText.isEmpty() || portText.isEmpty()) {
+            confirmDialog("Please Enter Frame,Slot, and Port to filter");
+            ontUnregisteredComboBox.setItems(ontUnregisteredService.findAll());
+            ontUnregisteredComboBox.setItemLabelGenerator(OntUnregistered::getSerialNumber);
+            return;
+        }
+//        ontUnregisteredComboBox.clear();
+        ontUnregisteredComboBox.setItems(ontUnregisteredService.findByFspContainingIgnoreCase(frameText.getValue()+"/"+slotText.getValue()+"/"+portText.getValue()));
+        ontUnregisteredComboBox.setItemLabelGenerator(OntUnregistered::getSerialNumber);
+
+    }
+
+
+    private void OnPortTextChanged(AbstractField.ComponentValueChangeEvent<TextField, String> textFieldStringComponentValueChangeEvent) {
+//        confirmDialog(textFieldStringComponentValueChangeEvent.getValue());
+    }
+
+    private void OnSlotTextChanged(AbstractField.ComponentValueChangeEvent<TextField, String> textFieldStringComponentValueChangeEvent) {
+//        confirmDialog(textFieldStringComponentValueChangeEvent.getValue());
+    }
+
+    private void OnFrameTextChanged(AbstractField.ComponentValueChangeEvent<TextField, String> textFieldStringComponentValueChangeEvent) {
+//        confirmDialog(textFieldStringComponentValueChangeEvent.getValue());
     }
 
     private void OnServicePortButton(ClickEvent<Button> buttonClickEvent) {
@@ -106,8 +146,10 @@ public class UnregisteredONTView extends VerticalLayout {
         Olt olt=oltComboBox.getValue();
         CommandHistory ch=new CommandHistory();
         //code to run ssh
-        freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="service-port  vlan 930 gpon " + portComboBox.getValue() + " ont " + freeBiggestOntID + " gemport 930 multi-service user-vlan 930 tag-transform translate";
+        Port p=getPortByOLTandFSP(olt);
+        freeBiggestOntID=getBiggestFreeOntID(ontService,p);
+        String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
+        String com="service-port vlan 930 gpon " + portText.getValue() + " ont " + freeBigONTIDstr + " gemport 930 multi-service user-vlan 930 tag-transform translate";
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -121,7 +163,7 @@ public class UnregisteredONTView extends VerticalLayout {
         try {
             String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
             info.getStyle().set("color" ,"#00FF00");
-            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(result);
             ch.setOlt(olt);
@@ -130,7 +172,7 @@ public class UnregisteredONTView extends VerticalLayout {
             ch = commandHistoryService.save(ch);
         } catch (Exception e) {
             info.getStyle().set("color" ,"#FF0000");
-            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(e.getMessage());
             ch.setOlt(olt);
@@ -139,6 +181,12 @@ public class UnregisteredONTView extends VerticalLayout {
             ch = commandHistoryService.save(ch);
             throw new RuntimeException(e);
         }
+    }
+
+    private Port getPortByOLTandFSP(Olt olt) {
+        Frame f=frameService.findByFrameNumberAndOltEquals2(frameText.getValue(),olt);
+        Slot s=slotService.findByFrameAndSlotID(f,Long.parseLong(slotText.getValue()));
+        return portService.findByFspContainingIgnoreCase(ontUnregisteredComboBox.getValue().getFsp().trim()).getFirst();
     }
 
     private void OnTr069Button(ClickEvent<Button> buttonClickEvent) {
@@ -152,12 +200,14 @@ public class UnregisteredONTView extends VerticalLayout {
         Olt olt=oltComboBox.getValue();
         CommandHistory ch=new CommandHistory();
         //code to run ssh
-        freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="ont tr069-server-config " + portComboBox.getValue().getPortNumberAsString() + "  " + freeBiggestOntID + " profile-id 20";
+        Port p=getPortByOLTandFSP(olt);
+        freeBiggestOntID=getBiggestFreeOntID(ontService,p);
+        String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
+        String com="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id 20";
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
-        c.add("interface gpon " + frameComboBox.getValue().getFrameNumberAsText() + "/" + slotComboBox.getValue().getSlotid());
+        c.add("interface gpon " + frameText.getValue() + "/" + slotText.getValue());
         c.add(com);
         for(int i=0;i<5;i++)
             c.add("\t");
@@ -169,7 +219,7 @@ public class UnregisteredONTView extends VerticalLayout {
         try {
             String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
             info.getStyle().set("color" ,"#00FF00");
-            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(result);
             ch.setOlt(olt);
@@ -178,7 +228,7 @@ public class UnregisteredONTView extends VerticalLayout {
             ch = commandHistoryService.save(ch);
         } catch (Exception e) {
             info.getStyle().set("color" ,"#FF0000");
-            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(e.getMessage());
             ch.setOlt(olt);
@@ -200,12 +250,14 @@ public class UnregisteredONTView extends VerticalLayout {
         Olt olt=oltComboBox.getValue();
         CommandHistory ch=new CommandHistory();
         //code to run ssh
-        freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="ont ipconfig " + portComboBox.getValue().getPortNumberAsString() + "  " +  freeBiggestOntID + " ip-index 0 dhcp vlan 930 priority 0";
+        Port p=getPortByOLTandFSP(olt);
+        freeBiggestOntID=getBiggestFreeOntID(ontService,p);
+        String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
+        String com="ont ipconfig" + portText.getValue() + " " +  freeBigONTIDstr + " ip-index 0 dhcp vlan 930 priority 0";
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
-        c.add("interface gpon " + frameComboBox.getValue().getFrameNumberAsText() + "/" + slotComboBox.getValue().getSlotid());
+        c.add("interface gpon " + frameText.getValue() + "/" + slotText.getValue());
         c.add(com);
         for(int i=0;i<5;i++)
             c.add("\t");
@@ -217,7 +269,7 @@ public class UnregisteredONTView extends VerticalLayout {
         try {
             String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
             info.getStyle().set("color" ,"#00FF00");
-            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(result);
             ch.setOlt(olt);
@@ -226,7 +278,7 @@ public class UnregisteredONTView extends VerticalLayout {
             ch = commandHistoryService.save(ch);
         } catch (Exception e) {
             info.getStyle().set("color" ,"#FF0000");
-            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
             ch.setCommandText(com);
             ch.setResult(e.getMessage());
             ch.setOlt(olt);
@@ -239,7 +291,7 @@ public class UnregisteredONTView extends VerticalLayout {
     }
 
     private void cancel(ClickEvent<Button> buttonClickEvent) {
-        DialogModal.confirmDialog("you clicked on cancel");
+        confirmDialog("you clicked on cancel");
     }
 
     private void OnAddOntButton(ClickEvent<Button> buttonClickEvent) {
@@ -247,19 +299,19 @@ public class UnregisteredONTView extends VerticalLayout {
             info.setText("Please Select an Olt");
             return;
         }
-        else if (frameComboBox.getValue()==null) {
+        else if (frameText.getValue()==null) {
             info.setText("Please select a Frame");
             return;
         }
-        else if (slotComboBox.getValue()==null) {
+        else if (slotText.getValue()==null) {
             info.setText("Please select a Slot");
             return;
         }
-        else if (portComboBox.getValue()==null) {
+        else if (portText.getValue()==null) {
             info.setText("Please select a Port");
             return;
         }
-        else if (ontComboBox.getValue()==null) {
+        else if (ontUnregisteredComboBox.getValue()==null) {
             info.setText("Please select an ONT");
             return;
         }
@@ -277,13 +329,34 @@ public class UnregisteredONTView extends VerticalLayout {
         Olt olt=oltComboBox.getValue();
         CommandHistory ch=new CommandHistory();
         //code to run ssh
-        freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="ont add " + portComboBox.getValue().getPortNumberAsString() +" "+ freeBiggestOntID + "  sn-auth " + ontComboBox.getValue().getSerialNumber() + " omci ont-lineprofile-id " + lineProfileComboBox.getValue().getProfileID() + " ont-srvprofile-id " + serviceProfileComboBox.getValue().getProfileID() + "desc OltManager";
+        Port p=getPortByOLTandFSP(olt);
+        freeBiggestOntID=getBiggestFreeOntID(ontService,p);
+        String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
+        String addOntCommand="ont add " + portText.getValue() +" " + freeBigONTIDstr + " sn-auth " + ontUnregisteredComboBox.getValue().getSerialNumber() + " omci ont-lineprofile-id " + lineProfileComboBox.getValue().getProfileID() + " ont-srvprofile-id " + serviceProfileComboBox.getValue().getProfileID() + " desc OltManager";
+//        String servicePortCommand="service-port  vlan  930  gpon  " + portText.getValue() + " ont " + freeBigONTIDstr + "  gemport  930  multi-service  user-vlan  930  tag-transform  translate ";
+        String servicePortCommand2="service-port vlan 930 gpon " + frameText.getValue()+"/"+slotText.getValue()+"/" +portText.getValue() + " ont " + freeBigONTIDstr +    " gemport 930 multi-service user-vlan 930 tag-transform  translate \n";
+        System.out.println("service port command:"+servicePortCommand2);
+        String iPConfigCommand="ont  ipconfig  " + portText.getValue() + "  " +  freeBigONTIDstr + "  ip-index  0  dhcp  vlan  930  priority  0  ";
+        String tr069ConfigCommand="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id 20";
+
+//        System.out.println("command is:" +com);
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
-        c.add("interface gpon " + frameComboBox.getValue().getFrameNumberAsText() + "/" + slotComboBox.getValue().getSlotid());
-        c.add(com);
+        c.add("interface gpon " + frameText.getValue() + "/" + slotText.getValue());
+        c.add(addOntCommand);
+        c.add("\n");
+        c.add("quit");
+        c.add("\n");
+        c.add(servicePortCommand2);
+        c.add("\n");
+        c.add("\n");
+        c.add("interface gpon " + frameText.getValue() + "/" + slotText.getValue());
+        c.add("\n");
+        c.add("\n");
+        c.add(tr069ConfigCommand);
+        c.add("\n");
+        c.add(iPConfigCommand);
         for(int i=0;i<5;i++)
             c.add("\t");
         c.add("\n\n\n");
@@ -294,57 +367,32 @@ public class UnregisteredONTView extends VerticalLayout {
         try {
             String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
             info.getStyle().set("color" ,"#00FF00");
-            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
-            ch.setCommandText(com);
+            info.setText("result: " + result + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
+            ch.setCommandText(addOntCommand);
             ch.setResult(result);
             ch.setOlt(olt);
             ch.setOltType(olt.getOltType());
             ch.setExcectionTime(ZonedDateTime.now(ZoneId.of("Asia/Tehran")));
             ch = commandHistoryService.save(ch);
-            DialogModal.confirmDialog("if every thing done successfully, dont change your selections for next operations such as service-port & tr069 ...");
+            confirmDialog("if every thing done successfully, dont change your selections for next operations such as service-port & tr069 ...");
         } catch (Exception e) {
             info.getStyle().set("color" ,"#FF0000");
-            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
-            ch.setCommandText(com);
+            info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
+            ch.setCommandText(addOntCommand);
             ch.setResult(e.getMessage());
             ch.setOlt(olt);
             ch.setOltType(olt.getOltType());
             ch.setExcectionTime(ZonedDateTime.now(ZoneId.of("Asia/Tehran")));
             ch = commandHistoryService.save(ch);
-            DialogModal.confirmDialog("if every thing done successfully, dont change your selections for next operations such as service-port & tr069 ...");
+            confirmDialog("if every thing done successfully, dont change your selections for next operations such as service-port & tr069 ...");
             throw new RuntimeException(e);
         }
     }
 
-    private void OnPortCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Port>, Port> comboBoxPortComponentValueChangeEvent) {
-        if (comboBoxPortComponentValueChangeEvent.getValue() != null) {
-            ontComboBox.setItems(ontService.findByPortEquals(comboBoxPortComponentValueChangeEvent.getValue()));
-            ontComboBox.setItemLabelGenerator(Ont::getSerialNumber);
-        }
-    }
-
-    private void OnServiceProfileCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<ServiceProfile>, ServiceProfile> comboBoxServiceProfileComponentValueChangeEvent) {
-        
-    }
-
-    private void OnSlotCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Slot>, Slot> comboBoxSlotComponentValueChangeEvent) {
-        if (comboBoxSlotComponentValueChangeEvent.getValue() != null) {
-            portComboBox.setItems(portService.findBySlotEquals(comboBoxSlotComponentValueChangeEvent.getValue()));
-            portComboBox.setItemLabelGenerator(Port::getFsp);
-        }
-    }
-
-    private void OnFrameCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Frame>, Frame> comboBoxFrameComponentValueChangeEvent) {
-        if (comboBoxFrameComponentValueChangeEvent.getValue() != null) {
-            slotComboBox.setItems(slotService.findByFrame(comboBoxFrameComponentValueChangeEvent.getValue()));
-            slotComboBox.setItemLabelGenerator(Slot::getSlotidAsText);
-        }
-    }
-
-    private void OnOltCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Olt>, Olt> comboBoxOltComponentValueChangeEvent) {
+   private void OnOltCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Olt>, Olt> comboBoxOltComponentValueChangeEvent) {
         if (comboBoxOltComponentValueChangeEvent.getValue() != null) {
-//            frameComboBox.setItems(frameService.findByOltEquals(comboBoxOltComponentValueChangeEvent.getValue()));
-//            frameComboBox.setItemLabelGenerator(Frame::getFrameNumberAsText);
+//            frameText.setItems(frameService.findByOltEquals(comboBoxOltComponentValueChangeEvent.getValue()));
+//            frameText.setItemLabelGenerator(Frame::getFrameNumberAsText);
             Olt olt=comboBoxOltComponentValueChangeEvent.getValue();
             CommandHistory ch=new CommandHistory();
             //code to run ssh
@@ -360,6 +408,11 @@ public class UnregisteredONTView extends VerticalLayout {
             c.add("y");
             try {
                 String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
+                List<OntUnregistered> ontUnregistereds=getUnregisterdONTList(result);
+                ontUnregisteredService.deleteAll();
+                ontUnregisteredService.saveAll(ontUnregistereds);
+                ontUnregisteredComboBox.setItems(ontUnregisteredService.findAll());
+                ontUnregisteredComboBox.setItemLabelGenerator(OntUnregistered::getSerialNumber);
                 info.getStyle().set("color" ,"#00FF00");
                 info.setText("result: " + result);
                 ch.setCommandText("display ont autofind all");
@@ -370,7 +423,8 @@ public class UnregisteredONTView extends VerticalLayout {
                 ch = commandHistoryService.save(ch);
             } catch (Exception e) {
                 info.getStyle().set("color" ,"#FF0000");
-                info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,portComboBox.getValue()));
+//                Port p=getPortByOLTandFSP(olt);
+//                info.setText("result: " + e.getMessage() + " getBiggestFreeOntID:" +getBiggestFreeOntID(ontService,p));
                 ch.setCommandText("display ont autofind all");
                 ch.setResult(e.getMessage());
                 ch.setOlt(olt);
@@ -384,12 +438,17 @@ public class UnregisteredONTView extends VerticalLayout {
     }
 
     private void ok(ClickEvent<Button> buttonClickEvent) {
-        DialogModal.confirmDialog("you clicked on OK!:::" + buttonClickEvent.getButton());
-    }
-    private void OnLineProfileCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<LineProfile>, LineProfile> comboBoxLineProfileComponentValueChangeEvent) {
+        confirmDialog("you clicked on OK!:::" + buttonClickEvent.getButton());
     }
 
-    private void OnOntCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Ont>, Ont> comboBoxOntComponentValueChangeEvent) {
 
+    private void OnOntCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<OntUnregistered>, OntUnregistered> comboBoxOntComponentValueChangeEvent) {
+        if (comboBoxOntComponentValueChangeEvent.getValue() != null) {
+//            confirmDialog(comboBoxOntComponentValueChangeEvent.getValue().getFsp());
+            String[] fsps = comboBoxOntComponentValueChangeEvent.getValue().getFsp().trim().split("/");
+            frameText.setValue(fsps[0]);
+            slotText.setValue(fsps[1]);
+            portText.setValue(fsps[2]);
+        }
     }
 }

@@ -31,8 +31,8 @@ public class CommandHistory implements Serializable {
     @Column(name = "command_text", length = 5000)
     private String commandText;
 
-    @Size(max = 5000)
-    @Column(name = "result", length = 5000)
+    @Size(max = 20000)
+    @Column(name = "result", length = 20000)
     private String result;
 
     @ManyToOne(fetch = FetchType.EAGER)

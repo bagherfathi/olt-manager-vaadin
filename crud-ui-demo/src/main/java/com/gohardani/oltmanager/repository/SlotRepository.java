@@ -11,6 +11,7 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findByFrameEquals(Frame frame);
     List<Slot> findByBoardNameContainingIgnoreCaseAndFrameEquals(String name,Frame frame);
     void deleteByFrameEquals(Frame frame);
+    Slot findByFrameEqualsAndSlotidEquals(Frame frame,Long slotid);
 
 
 }

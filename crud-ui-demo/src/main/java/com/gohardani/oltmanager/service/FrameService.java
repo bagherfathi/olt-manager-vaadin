@@ -30,6 +30,25 @@ public class FrameService {
             return frameRepository.findByFrameNumberAndOltEquals(f,olt);
 
     }
+    public Frame findByFrameNumberAndOltEquals2(String frameNumber, Olt olt) {
+//        System.out.println("framenumber: " + frameNumber + ":" + frameNumber.length());
+        int f=-1;
+        try {
+            if (!frameNumber.isEmpty() && !frameNumber.trim().isEmpty())
+                f = Integer.parseInt(frameNumber);
+        }
+        catch (Exception e) {System.out.println(e);}
+//        System.out.println(f + ":" + olt);
+        if(f==-1 && olt==null)
+            return null;
+        else if(f!=-1 && olt==null)
+            return null;
+        else if (f==-1 && olt!=null)
+            return null;
+        else
+            return frameRepository.findByFrameNumberAndOltEquals(f,olt).getFirst();
+
+    }
     public List<Frame> findByOltEquals(Olt olt) {
         return frameRepository.findByOltEquals(olt);
 

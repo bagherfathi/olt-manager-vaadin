@@ -50,7 +50,7 @@ public class JavaTelnetsimulator {
         // It must not be recommended, but if you want to skip host-key check,
         session.setConfig("StrictHostKeyChecking", "no");
 
-        session.connect(3000);
+        session.connect(5000);
         //session.connect(30000);   // making a connection with timeout.
 
         Channel channel=session.openChannel("shell");
@@ -67,6 +67,8 @@ public class JavaTelnetsimulator {
             dataOut.writeBytes(command +" \n");
             dataOut.flush();
             sleep(1000);
+            if(command.startsWith("ont add"))
+                sleep(10000);
         }
         System.out.println("Flushing SSH...");
         String result=read(reader);
