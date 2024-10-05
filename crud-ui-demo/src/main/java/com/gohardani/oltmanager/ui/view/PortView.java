@@ -117,6 +117,7 @@ public class PortView extends VerticalLayout {
             try {
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Port> ports=getPortList(s);
+                portService.findBySlotEquals(slot);
                 for (Port port : ports) {
                     port.setSlot(slot);
                     portService.save(port);

@@ -217,6 +217,8 @@ public class SSHOutputProcessor {
         ArrayList<Slot> slots = new ArrayList<>();
         String[] commands = commandOutput.split("\n");
         for (String s : commands) {
+            if(s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
             if(s.trim().startsWith("---- More")){
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("----")+5);
@@ -297,6 +299,8 @@ public class SSHOutputProcessor {
         ArrayList<Ont> onts = new ArrayList<>();
         String[] commands = commandOutput.split("\n");
         for (String s : commands) {
+            if(s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
             if(s.trim().startsWith("---- More")){
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("----")+5);
@@ -354,6 +358,8 @@ public class SSHOutputProcessor {
         Port p=null;
         int s1=0;
         for (String s : commands) {
+            if(s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
             if(s.trim().startsWith("---- More")){
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("----")+5);
@@ -431,6 +437,8 @@ public class SSHOutputProcessor {
         OntUnregistered ount=null;
         int s1=0;
         for (String s : commands) {
+            if(s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
             if(s.trim().startsWith("---- More")){
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("----")+5);

@@ -41,6 +41,7 @@ public class PortService {
     public void delete(Port port) {
         portRepository.delete(port);
     }
+    public void deleteBySlot(Slot slot) {portRepository.deleteBySlotEquals(slot);}
 
 
 }

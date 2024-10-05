@@ -138,6 +138,7 @@ public class OntView extends VerticalLayout {
             try {
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Ont> onts=getOntList(s);
+                ontService.findByPortEquals(port);
                 for (Ont ont : onts) {
                     ont.setPort(port);
                     ontService.save(ont);

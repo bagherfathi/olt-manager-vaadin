@@ -100,6 +100,7 @@ public class SlotView extends VerticalLayout {
 //                slotService.deleteByFrame(frame);
                 String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 ArrayList<Slot> slots=getSlotList(s);
+                slotService.deleteByFrame(frame);
                 for (Slot slot : slots) {
                     slot.setFrame(frame);
                     slotService.save(slot);
