@@ -301,7 +301,7 @@ public class SSHOutputProcessor {
         for (String s : commands) {
             if(s.trim().contains("Failure: System is busy, please retry after a while"))
                 throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
-            if(s.trim().startsWith("---- More")){
+            else if(s.trim().startsWith("---- More")){
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("----")+5);
                 s=s.substring(s.indexOf("[37D")+5);
@@ -343,6 +343,20 @@ public class SSHOutputProcessor {
                     o.setProtectSide(fields[8].trim());
                     onts.add(o);
                 } else
+                if (fields.length == 8) {
+                    String[] ts = fields[0].trim().split("/");
+                    o.setFrameNo(Integer.parseInt(ts[0].trim()));
+                    o.setSlotNo(Integer.parseInt(ts[1].trim()));
+                    o.setPortNo(Integer.parseInt(ts[2].trim()));
+                    o.setOntID(Integer.parseInt(fields[1].trim()));
+                    o.setSerialNumber(fields[2].trim());
+                    o.setControlFlag(fields[3].trim());
+                    o.setRunState(fields[4].trim());
+                    o.setConfigState(fields[5].trim());
+                    o.setMatchState(fields[6].trim());
+                    o.setProtectSide(fields[7].trim());
+                    onts.add(o);
+                }
                     System.out.println("error in parsing ont command output");
             }
         }
