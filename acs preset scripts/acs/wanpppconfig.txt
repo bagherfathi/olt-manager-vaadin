@@ -1,0 +1,4 @@
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username", { value: Date.now() } , {value: "2199219362@tct4"} );
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Password", { value: Date.now() } , {value: "361271"} );
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.X_HW_VLAN", { value: Date.now() } , {value: 800 } );
+

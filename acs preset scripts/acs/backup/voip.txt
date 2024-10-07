@@ -1,0 +1,37 @@
+let provisioned = declare("Tags.VoipProvisioned", {value: 1});
+if (provisioned.value !== undefined) {
+    log('CPE VOIP is (allegedly) provisioned, returning');
+    return;
+}
+declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.[]", null, { path: 3 });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.[]", null, { path: 1 });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.*", { path: Date.now() });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.*.Name", { value: Date.now() }, { value: "VOIP" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.*.ConnectionType", { value: Date.now() }, { value: "IP_Routed" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.*.NATEnabled", { value: Date.now() }, { value: false });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.*.Enable", { value: Date.now() }, { value: true });
+
+
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.AddressingType", { value: Date.now() }, { value: "Static" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.X_HW_SERVICELIST", { value: Date.now() }, { value: "VOIP" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.X_HW_VLAN", { value: Date.now() }, { value: 700 });
+
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.DefaultGateway", { value: Date.now() }, { value: "10.6.136.1" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.ExternalIPAddress", { value: Date.now() }, { value: "10.6.136.254" });
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection.1.SubnetMask", { value: Date.now() }, { value: "255.255.248.0" });
+
+	
+    declare("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.3.WANIPConnection", { value: Date.now() });
+
+
+    declare("InternetGatewayDevice.Services", { value: Date.now() });
+    declare("InternetGatewayDevice.Services.VoiceService", { value: Date.now() });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile", { value: Date.now() });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.SIP.OutboundProxy", { value: Date.now() }, { value: "10.153.101.79" });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.SIP.ProxyServer", { value: Date.now() }, { value: "10.153.101.79" });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.SIP.AuthPassword", { value: Date.now() }, { value: "86171017" });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.SIP.AuthUserName", { value: Date.now() }, { value: "86171017" });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.SIP.URI", { value: Date.now() }, { value: "86171017" });
+    declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.DirectoryNumber", { value: Date.now() }, { value: "86171017" });
+declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.Enable", { value: Date.now() }, { value: "Enabled" });
+	declare("Tags.VoipProvisioned", null, {value: true});

@@ -1,0 +1,3 @@
+const now = Date.now();
+declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.1.Line.1.DirectoryNumber", {value: now}, {value: "999"});
+

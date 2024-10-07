@@ -1,0 +1,16 @@
+log('----------------Farda voip start');
+declare("InternetGatewayDevice.Services.VoiceService.1.VoiceProfile.*", null,{path: 1});
+const basePath='InternetGatewayDevice.Services.VoiceService.1.VoiceProfile';
+declare('${basePath}.[]', null, {path: 0});
+let params={
+		'Line.1.DirectoryNumber' : '86171017',
+		'Line.1.SIP.AuthUserName' : '86171017',
+		'Line.1.SIP.AuthPassword' :  '86171017',
+		'SIP.ProxyServer' : '10.153.101.79',
+		'Line.1.Enable' : 'Enabled'
+		};
+		
+const path=basePath + '.[' + Object.keys(params).map(key => key + ':' + params[key]).join(',') + ']';
+declare(path, {path: 1} , {path: 1});
+
+log('----------------Farda voip end');

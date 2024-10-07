@@ -1,0 +1,12 @@
+let provisioned = declare("Tags.WIFI3Provisioned", {value: 1});
+if (provisioned.value !== undefined) {
+    log('CPE WIFI3 is (allegedly) provisioned, returning');
+    return;
+}
+
+   declare("InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.PreSharedKey.1.PreSharedKey", { value: Date.now() }, { value: "Test@1234" });
+
+   // declare("InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.PreSharedKey.1.KeyPassphrase", { value: Date.now() }, { value: "Test@1234" });
+    declare("InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID", { value: Date.now() }, { value: "FardaAP" });
+    log('CPE WIFI3 is provisioned for first time');
+	declare("Tags.WIFI3Provisioned", null, {value: true});
