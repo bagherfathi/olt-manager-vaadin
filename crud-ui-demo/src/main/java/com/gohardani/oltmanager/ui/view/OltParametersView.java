@@ -57,14 +57,7 @@ public class OltParametersView extends VerticalLayout {
         add(crud);
         // logic configuration
         crud.setOperations(
-                () -> { ArrayList<OltParameters> oltparametersList = new ArrayList<>();
-                    if(oltComboBox.getValue()!=null) {
-                        OltParameters op = oltParametersService.findOltParametersByOlt(oltComboBox.getValue());
-                        if(op!=null)
-                            oltparametersList.add(op);
-                    }
-                    return oltparametersList;},
-
+                () -> oltParametersService.findOltParametersByOlt(oltComboBox.getValue()),
                 oltParameters -> oltParametersService.save(oltParameters),
                 oltParameters -> oltParametersService.save(oltParameters),
                 oltParameters -> oltParametersService.delete(oltParameters)

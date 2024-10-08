@@ -13,7 +13,9 @@ public class OltParametersService {
 
     private final OltParametersRepository oltParametersRepository;
 
-    public OltParameters findOltParametersByOlt(Olt olt) {
+    public List<OltParameters> findOltParametersByOlt(Olt olt) {
+        if(olt==null)
+            return oltParametersRepository.findAll();
         return oltParametersRepository.findByOltEquals(olt);
     }
     public OltParametersService(OltParametersRepository oltParametersRepository) {

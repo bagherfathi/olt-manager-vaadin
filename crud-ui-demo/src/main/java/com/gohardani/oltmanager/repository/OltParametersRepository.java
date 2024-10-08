@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OltParametersRepository extends JpaRepository<OltParameters, Long> {
-    OltParameters findByOltEquals(Olt olt);
+    List<OltParameters> findByOltEquals(Olt olt);
 
 }

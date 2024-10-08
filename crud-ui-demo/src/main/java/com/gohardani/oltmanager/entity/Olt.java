@@ -62,17 +62,18 @@ public class Olt implements Serializable {
     @JsonIgnoreProperties(value = { "sshCommand", "olt", "oltType" }, allowSetters = true)
     private Set<CommandHistory> commandHistories = new HashSet<>();
 
-    public @NotNull OltParameters getOltParameters() {
+    @OneToOne(fetch = FetchType.EAGER)
+    private OltParameters oltParameters;
+
+
+    public  OltParameters getOltParameters() {
         return oltParameters;
     }
 
-    public void setOltParameters(@NotNull OltParameters oltParameters) {
+    public void setOltParameters(OltParameters oltParameters) {
         this.oltParameters = oltParameters;
     }
 
-    @NotNull
-    @OneToOne(fetch = FetchType.EAGER)
-    private OltParameters oltParameters;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
