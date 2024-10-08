@@ -30,7 +30,7 @@ import static com.gohardani.oltmanager.Utility.sshOutputProcessor.SSHOutputProce
 @Route(value = "UnregisteredONT", layout = MainLayout.class)
 public class UnregisteredONTView extends VerticalLayout {
 
-    private final OntUnregisteredService ontUnregisteredService;
+    private OntUnregisteredService ontUnregisteredService;
     private int freeBiggestOntID=-1;
 
     private OltService oltService;
@@ -56,6 +56,7 @@ public class UnregisteredONTView extends VerticalLayout {
     private Button tr069Button;
     private Button ipConfigButton;
     private Button filterButton;
+    private Button reImportButton;
 
     private Paragraph info;
 
@@ -92,7 +93,8 @@ public class UnregisteredONTView extends VerticalLayout {
         serviceProfileComboBox.setItems(serviceProfileService.findAll());
         serviceProfileComboBox.setItemLabelGenerator(ServiceProfile::getProfileName);
         filterButton = new Button("Filter",this::onFilterClick);
-        HorizontalLayout hl0 = new HorizontalLayout(oltComboBox, frameText, slotText, portText,filterButton, ontUnregisteredComboBox);
+        reImportButton = new Button("ReImport",this::onReImportClick);
+        HorizontalLayout hl0 = new HorizontalLayout(oltComboBox,reImportButton,frameText, slotText, portText,filterButton, ontUnregisteredComboBox);
         HorizontalLayout hl1=new HorizontalLayout(lineProfileComboBox, serviceProfileComboBox);
         add(hl0,hl1);
         addOntButton = new Button("Add ONT",this::OnAddOntButton);
@@ -149,7 +151,7 @@ public class UnregisteredONTView extends VerticalLayout {
         Port p=getPortByOLTandFSP(olt);
         freeBiggestOntID=getBiggestFreeOntID(ontService,p);
         String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
-        String com="service-port vlan 930 gpon " + portText.getValue() + " ont " + freeBigONTIDstr + " gemport 930 multi-service user-vlan 930 tag-transform translate";
+        String com="service-port vlan "+ olt.getOltParameters().getVlanid() + " gpon " + portText.getValue() + " ont " + freeBigONTIDstr + " gemport "+ olt.getOltParameters().getGemport() +" multi-service user-vlan "+ olt.getOltParameters().getUserVlanID() +" tag-transform translate";
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -203,7 +205,7 @@ public class UnregisteredONTView extends VerticalLayout {
         Port p=getPortByOLTandFSP(olt);
         freeBiggestOntID=getBiggestFreeOntID(ontService,p);
         String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
-        String com="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id 20";
+        String com="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id " + olt.getOltParameters().getTr069ProfileID();
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -253,7 +255,7 @@ public class UnregisteredONTView extends VerticalLayout {
         Port p=getPortByOLTandFSP(olt);
         freeBiggestOntID=getBiggestFreeOntID(ontService,p);
         String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
-        String com="ont ipconfig" + portText.getValue() + " " +  freeBigONTIDstr + " ip-index 0 dhcp vlan 930 priority 0";
+        String com="ont ipconfig" + portText.getValue() + " " +  freeBigONTIDstr + " ip-index "+ olt.getOltParameters().getIpIndex() +" dhcp vlan "+ olt.getOltParameters().getVlanid() +" priority " + olt.getOltParameters().getPriority();
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -334,10 +336,10 @@ public class UnregisteredONTView extends VerticalLayout {
         String freeBigONTIDstr=Integer.toString(freeBiggestOntID);
         String addOntCommand="ont add " + portText.getValue() +" " + freeBigONTIDstr + " sn-auth " + ontUnregisteredComboBox.getValue().getSerialNumber() + " omci ont-lineprofile-id " + lineProfileComboBox.getValue().getProfileID() + " ont-srvprofile-id " + serviceProfileComboBox.getValue().getProfileID() + " desc OltManager";
 //        String servicePortCommand="service-port  vlan  930  gpon  " + portText.getValue() + " ont " + freeBigONTIDstr + "  gemport  930  multi-service  user-vlan  930  tag-transform  translate ";
-        String servicePortCommand2="service-port vlan 930 gpon " + frameText.getValue()+"/"+slotText.getValue()+"/" +portText.getValue() + " ont " + freeBigONTIDstr +    " gemport 930 multi-service user-vlan 930 tag-transform  translate \n";
+        String servicePortCommand2="service-port vlan "+ olt.getOltParameters().getVlanid() +" gpon " + frameText.getValue()+"/"+slotText.getValue()+"/" +portText.getValue() + " ont " + freeBigONTIDstr +    " gemport "+ olt.getOltParameters().getGemport() +" multi-service user-vlan "+ olt.getOltParameters().getUserVlanID() +" tag-transform  translate \n";
         System.out.println("service port command:"+servicePortCommand2);
-        String iPConfigCommand="ont  ipconfig  " + portText.getValue() + "  " +  freeBigONTIDstr + "  ip-index  0  dhcp  vlan  930  priority  0  ";
-        String tr069ConfigCommand="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id 20";
+        String iPConfigCommand="ont  ipconfig  " + portText.getValue() + "  " +  freeBigONTIDstr + "  ip-index  "+ olt.getOltParameters().getIpIndex() +"  dhcp  vlan  "+ olt.getOltParameters().getVlanid() +"  priority   " + olt.getOltParameters().getPriority();
+        String tr069ConfigCommand="ont tr069-server-config " + portText.getValue() + " " + freeBigONTIDstr + " profile-id " + olt.getOltParameters().getTr069ProfileID();
 
 //        System.out.println("command is:" +com);
         ArrayList<String> c=new ArrayList<>();
@@ -390,10 +392,14 @@ public class UnregisteredONTView extends VerticalLayout {
     }
 
    private void OnOltCBClick(AbstractField.ComponentValueChangeEvent<ComboBox<Olt>, Olt> comboBoxOltComponentValueChangeEvent) {
-        if (comboBoxOltComponentValueChangeEvent.getValue() != null) {
+       ontUnregisteredComboBox.setItems(ontUnregisteredService.findAll());
+       ontUnregisteredComboBox.setItemLabelGenerator(OntUnregistered::getSerialNumber);
+    }
+    private void onReImportClick(ClickEvent<Button> buttonClickEvent){
+        if (oltComboBox.getValue() != null) {
 //            frameText.setItems(frameService.findByOltEquals(comboBoxOltComponentValueChangeEvent.getValue()));
 //            frameText.setItemLabelGenerator(Frame::getFrameNumberAsText);
-            Olt olt=comboBoxOltComponentValueChangeEvent.getValue();
+            Olt olt=oltComboBox.getValue();
             CommandHistory ch=new CommandHistory();
             //code to run ssh
             ArrayList<String> c=new ArrayList<>();
@@ -409,7 +415,9 @@ public class UnregisteredONTView extends VerticalLayout {
             try {
                 String result= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
                 List<OntUnregistered> ontUnregistereds=getUnregisterdONTList(result);
-                ontUnregisteredService.deleteAll();
+                for(OntUnregistered ontUnregistered:ontUnregistereds)
+                    ontUnregistered.setOlt(olt);
+                ontUnregisteredService.deleteByOlt(olt);
                 ontUnregisteredService.saveAll(ontUnregistereds);
                 ontUnregisteredComboBox.setItems(ontUnregisteredService.findAll());
                 ontUnregisteredComboBox.setItemLabelGenerator(OntUnregistered::getSerialNumber);
@@ -436,7 +444,6 @@ public class UnregisteredONTView extends VerticalLayout {
 
         }
     }
-
     private void ok(ClickEvent<Button> buttonClickEvent) {
         confirmDialog("you clicked on OK!:::" + buttonClickEvent.getButton());
     }

@@ -1,5 +1,6 @@
 package com.gohardani.oltmanager.service;
 
+import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.entity.OntUnregistered;
 import com.gohardani.oltmanager.repository.OntUnregisteredRepository;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class OntUnregisteredService {
     }
     public void deleteAll(){
         ontUnregisteredRepository.deleteAll();
+    }
+    public void deleteByOlt(Olt olt) {
+        ontUnregisteredRepository.deleteByOltEquals(olt);
     }
     public void saveAll(List<OntUnregistered> ontUnregisteredList) {
         ontUnregisteredRepository.saveAll(ontUnregisteredList);

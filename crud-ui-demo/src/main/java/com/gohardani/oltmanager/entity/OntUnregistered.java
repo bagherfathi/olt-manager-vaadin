@@ -65,6 +65,9 @@ public class OntUnregistered implements Serializable {
     private String OntAutofindTime;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    private Olt olt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     public OntUnregistered(Long id, String no, String fsp, String serialNumber, String password, String loid, String checkcode, String vendorID, String ontVersion, String ontSoftwareVersion, String ontEquipmentID, String ontAutofindTime, User user) {
@@ -82,13 +85,69 @@ public class OntUnregistered implements Serializable {
         OntAutofindTime = ontAutofindTime;
         this.user = user;
     }
+    public Olt getOlt() {
+        return olt;
+    }
 
+    public void setOlt(Olt olt) {
+        this.olt = olt;
+    }
     public OntUnregistered() {
 
     }
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "OntUnregistered{" +
+                "id=" + id +
+                ", no='" + no + '\'' +
+                ", fsp='" + fsp + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
+                ", Password='" + Password + '\'' +
+                ", Loid='" + Loid + '\'' +
+                ", Checkcode='" + Checkcode + '\'' +
+                ", VendorID='" + VendorID + '\'' +
+                ", OntVersion='" + OntVersion + '\'' +
+                ", OntSoftwareVersion='" + OntSoftwareVersion + '\'' +
+                ", OntEquipmentID='" + OntEquipmentID + '\'' +
+                ", OntAutofindTime='" + OntAutofindTime + '\'' +
+                ", olt=" + olt +
+                ", user=" + user +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OntUnregistered that = (OntUnregistered) o;
+        return Objects.equals(id, that.id) && Objects.equals(no, that.no) && Objects.equals(fsp, that.fsp) && Objects.equals(serialNumber, that.serialNumber) && Objects.equals(Password, that.Password) && Objects.equals(Loid, that.Loid) && Objects.equals(Checkcode, that.Checkcode) && Objects.equals(VendorID, that.VendorID) && Objects.equals(OntVersion, that.OntVersion) && Objects.equals(OntSoftwareVersion, that.OntSoftwareVersion) && Objects.equals(OntEquipmentID, that.OntEquipmentID) && Objects.equals(OntAutofindTime, that.OntAutofindTime) && Objects.equals(olt, that.olt) && Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, no, fsp, serialNumber, Password, Loid, Checkcode, VendorID, OntVersion, OntSoftwareVersion, OntEquipmentID, OntAutofindTime, olt, user);
+    }
+
+    public OntUnregistered(String ontSoftwareVersion, Long id, String no, String fsp, String serialNumber, String password, String loid, String checkcode, String vendorID, String ontVersion, String ontEquipmentID, String ontAutofindTime, Olt olt, User user) {
+        OntSoftwareVersion = ontSoftwareVersion;
+        this.id = id;
+        this.no = no;
+        this.fsp = fsp;
+        this.serialNumber = serialNumber;
+        Password = password;
+        Loid = loid;
+        Checkcode = checkcode;
+        VendorID = vendorID;
+        OntVersion = ontVersion;
+        OntEquipmentID = ontEquipmentID;
+        OntAutofindTime = ontAutofindTime;
+        this.olt = olt;
+        this.user = user;
     }
 
     public void setId(Long id) {
@@ -192,36 +251,5 @@ public class OntUnregistered implements Serializable {
     }
 
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, no, fsp, serialNumber, Password, Loid, Checkcode, VendorID, OntVersion, OntSoftwareVersion, OntEquipmentID, OntAutofindTime, user);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OntUnregistered that = (OntUnregistered) o;
-        return Objects.equals(id, that.id) && Objects.equals(no, that.no) && Objects.equals(fsp, that.fsp) && Objects.equals(serialNumber, that.serialNumber) && Objects.equals(Password, that.Password) && Objects.equals(Loid, that.Loid) && Objects.equals(Checkcode, that.Checkcode) && Objects.equals(VendorID, that.VendorID) && Objects.equals(OntVersion, that.OntVersion) && Objects.equals(OntSoftwareVersion, that.OntSoftwareVersion) && Objects.equals(OntEquipmentID, that.OntEquipmentID) && Objects.equals(OntAutofindTime, that.OntAutofindTime) && Objects.equals(user, that.user);
-    }
-
-    @Override
-    public String toString() {
-        return "OntUnregistered{" +
-                "id=" + id +
-                ", no='" + no + '\'' +
-                ", fsp='" + fsp + '\'' +
-                ", SerialNumber='" + serialNumber + '\'' +
-                ", Password='" + Password + '\'' +
-                ", Loid='" + Loid + '\'' +
-                ", Checkcode='" + Checkcode + '\'' +
-                ", VendorID='" + VendorID + '\'' +
-                ", OntVersion='" + OntVersion + '\'' +
-                ", OntSoftwareVersion='" + OntSoftwareVersion + '\'' +
-                ", OntEquipmentID='" + OntEquipmentID + '\'' +
-                ", OntAutofindTime='" + OntAutofindTime + '\'' +
-                ", user=" + user +
-                '}';
-    }
 }
 
