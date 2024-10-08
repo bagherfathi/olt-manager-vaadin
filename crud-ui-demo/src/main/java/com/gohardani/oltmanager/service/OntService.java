@@ -44,4 +44,7 @@ public class OntService {
     }
 
 
+    public void deleteByPort(Port port) {
+        ontRepository.deleteByPortEquals(port);
+    }
 }
