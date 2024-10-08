@@ -26,6 +26,7 @@ import static com.gohardani.oltmanager.Utility.SSH.JavaTelnetsimulator.telnetCon
 @Route(value = "ONTAdd", layout = MainLayout.class)
 public class ONTAddView extends VerticalLayout {
 
+    private final OltParametersView oltParameters;
     private int freeBiggestOntID=-1;
 
     private OltService oltService;
@@ -53,7 +54,7 @@ public class ONTAddView extends VerticalLayout {
 
     private Paragraph info;
 
-    public ONTAddView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN) {
+    public ONTAddView(SshService sshServiceIN, OntService ontServiceIN, OltService oltServiceIN, CommandHistoryService commandHistoryServiceIN, FrameService frameServiceIN, SlotService slotServiceIN, PortService portServiceIN, LineProfileService lineProfileServiceIN, ServiceProfileService serviceProfileServiceIN, OltParametersView oltParameters) {
         oltService = oltServiceIN;
         frameService = frameServiceIN;
         slotService = slotServiceIN;
@@ -94,6 +95,7 @@ public class ONTAddView extends VerticalLayout {
         info.setText("");
         HorizontalLayout hl2=new HorizontalLayout(addOntButton,servicePortButton,tr069Button,ipConfigButton);
         add(hl2);
+        this.oltParameters = oltParameters;
     }
 
     private void OnServicePortButton(ClickEvent<Button> buttonClickEvent) {
@@ -108,7 +110,7 @@ public class ONTAddView extends VerticalLayout {
         CommandHistory ch=new CommandHistory();
         //code to run ssh
         freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="service-port  vlan 930 gpon " + portComboBox.getValue() + " ont " + freeBiggestOntID + " gemport 930 multi-service user-vlan 930 tag-transform translate";
+        String com="service-port  vlan " + olt.getOltParameters().getVlanid() + " gpon " + portComboBox.getValue() + " ont " + freeBiggestOntID + " gemport " + olt.getOltParameters().getGemport() + " multi-service user-vlan " + olt.getOltParameters().getUserVlanID() + " tag-transform translate";
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -154,7 +156,7 @@ public class ONTAddView extends VerticalLayout {
         CommandHistory ch=new CommandHistory();
         //code to run ssh
         freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="ont tr069-server-config " + portComboBox.getValue().getPortNumberAsString() + "  " + freeBiggestOntID + " profile-id 20";
+        String com="ont tr069-server-config " + portComboBox.getValue().getPortNumberAsString() + "  " + freeBiggestOntID + " profile-id " + olt.getOltParameters().getTr069ProfileID();
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
@@ -202,7 +204,7 @@ public class ONTAddView extends VerticalLayout {
         CommandHistory ch=new CommandHistory();
         //code to run ssh
         freeBiggestOntID=getBiggestFreeOntID(ontService,portComboBox.getValue());
-        String com="ont ipconfig " + portComboBox.getValue().getPortNumberAsString() + "  " +  freeBiggestOntID + " ip-index 0 dhcp vlan 930 priority 0";
+        String com="ont ipconfig " + portComboBox.getValue().getPortNumberAsString() + "  " +  freeBiggestOntID + " ip-index " + olt.getOltParameters().getIpIndex() + " dhcp vlan " + olt.getOltParameters().getVlanid() + " priority " + olt.getOltParameters().getPriority();
         ArrayList<String> c=new ArrayList<>();
         c.add("enable");
         c.add("config");
