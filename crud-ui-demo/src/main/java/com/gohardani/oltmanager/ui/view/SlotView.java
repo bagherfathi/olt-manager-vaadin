@@ -7,6 +7,7 @@ import com.gohardani.oltmanager.service.SlotService;
 import com.gohardani.oltmanager.service.FrameService;
 import com.gohardani.oltmanager.service.UserService;
 import com.gohardani.oltmanager.ui.MainLayout;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -28,16 +29,14 @@ import static com.gohardani.oltmanager.Utility.sshOutputProcessor.SSHOutputProce
 @RolesAllowed({"ADMIN","USER"})
 @Route(value = "slot", layout = MainLayout.class)
 public class SlotView extends VerticalLayout {
-
-//    private final UserService userService;
-
+    ComboBox<Olt> oltComboBox;
+    ComboBox<Frame> frameComboBox;
+    SlotService slotService;
     public SlotView(OltService oltService, FrameService frameService, UserService userService, SlotService slotService) {
-        // crud instance
+        this.slotService = slotService;
         GridCrud<Slot> crud = new GridCrud<>(Slot.class);
-
-        ComboBox<Olt> oltComboBox = new ComboBox<>();
-        ComboBox<Frame> frameComboBox = new ComboBox<>();
-
+        oltComboBox = new ComboBox<>();
+        frameComboBox = new ComboBox<>();
         //olt filter
         oltComboBox.setItems(oltService.findAll());
         oltComboBox.setItemLabelGenerator(Olt::getName);
@@ -66,56 +65,9 @@ public class SlotView extends VerticalLayout {
         filter.setPlaceholder("Filter by Board Name");
         filter.setClearButtonVisible(true);
         crud.getCrudLayout().addFilterComponent(filter);
-
-
         //import button
-        Button button = new Button("Import");
-        button.addClickListener(clickEvent -> {
-                    if (oltComboBox.getValue() == null) {
-                        confirmDialog("Please Select an Olt");
-                        return;
-                    } else if(frameComboBox.getValue() == null){
-                        confirmDialog("Please Select a Frame");
-                        return;
-                    }
-                    Olt olt = oltComboBox.getValue();
-                    Frame frame = frameComboBox.getValue();
-                    if (olt.getIp().trim().contains("1.1.1.8")) {
-                        ArrayList<Slot> slots=testGetSlotList();
-                        for (Slot slot : slots) {
-                            slot.setFrame(frame);
-                            slotService.save(slot);
-                        }
-                    }
-                    ArrayList<String> c=new ArrayList<>();
-                    c.add("enable");
-                    c.add("display board "+ frame.getFrameNumber());
-                    for(int i=0;i<10;i++)
-                        c.add("\t");
-                    c.add("\n\n\n");
-                    c.add("quit");
-                    c.add("y");
-//                    c.add("exit");
-            try {
-//                slotService.deleteByFrame(frame);
-                String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
-                ArrayList<Slot> slots=getSlotList(s);
-                slotService.deleteByFrame(frame);
-                for (Slot slot : slots) {
-                    slot.setFrame(frame);
-                    slotService.save(slot);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            crud.refreshGrid();
-                });
-
-
-
+        Button button = new Button("Import",this::importButtonClickListener);
         crud.getCrudLayout().addToolbarComponent(button);
-
-
         // grid configuration
         crud.getGrid().setColumns("frame","slotid", "boardName","status","subType0","subType1","onOff","user");
         crud.getGrid().setColumnReorderingAllowed(true);
@@ -149,6 +101,46 @@ public class SlotView extends VerticalLayout {
 
         filter.addValueChangeListener(e -> crud.refreshGrid());
 //        this.userService = userService;
+    }
+
+    private void importButtonClickListener(ClickEvent<Button> buttonClickEvent) {
+        if (oltComboBox.getValue() == null) {
+            confirmDialog("Please Select an Olt");
+            return;
+        } else if(frameComboBox.getValue() == null){
+            confirmDialog("Please Select a Frame");
+            return;
+        }
+        Olt olt = oltComboBox.getValue();
+        Frame frame = frameComboBox.getValue();
+        if (olt.getIp().trim().contains("1.1.1.8")) {
+            ArrayList<Slot> slots=testGetSlotList();
+            for (Slot slot : slots) {
+                slot.setFrame(frame);
+                slotService.save(slot);
+            }
+        }
+        ArrayList<String> c=new ArrayList<>();
+        c.add("enable");
+        c.add("display board "+ frame.getFrameNumber());
+        for(int i=0;i<10;i++)
+            c.add("\t");
+        c.add("\n\n\n");
+        c.add("quit");
+        c.add("y");
+//                    c.add("exit");
+        try {
+//                slotService.deleteByFrame(frame);
+            String s= telnetConnection(c,olt.getUsername().trim(),olt.getPassword().trim(), olt.getIp().trim(),olt.getPort() );
+            ArrayList<Slot> slots=getSlotList(s);
+            slotService.deleteByFrame(frame);
+            for (Slot slot : slots) {
+                slot.setFrame(frame);
+                slotService.save(slot);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

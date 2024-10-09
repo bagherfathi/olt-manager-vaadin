@@ -1,5 +1,6 @@
 package com.gohardani.oltmanager.service;
 
+import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.entity.ServiceProfile;
 import com.gohardani.oltmanager.repository.ServiceProfileRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,6 @@ public class ServiceProfileService {
     public ServiceProfile save(ServiceProfile serviceProfile) {
         return serviceProfileRepository.save(serviceProfile);
     }
-    public void delete(ServiceProfile serviceProfile) {serviceProfileRepository.delete(serviceProfile);
-
-    }
+    public void delete(ServiceProfile serviceProfile) {serviceProfileRepository.delete(serviceProfile);}
+    public void deleteByOlt(Olt olt) {serviceProfileRepository.deleteByOltEquals(olt);}
 }

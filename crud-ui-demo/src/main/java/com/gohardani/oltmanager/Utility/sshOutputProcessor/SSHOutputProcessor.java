@@ -1,9 +1,6 @@
 package com.gohardani.oltmanager.Utility.sshOutputProcessor;
 
-import com.gohardani.oltmanager.entity.Ont;
-import com.gohardani.oltmanager.entity.OntUnregistered;
-import com.gohardani.oltmanager.entity.Port;
-import com.gohardani.oltmanager.entity.Slot;
+import com.gohardani.oltmanager.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -509,6 +506,130 @@ public class SSHOutputProcessor {
             }
         }
         return ontus;
+    }
+
+    //display ont-lineprofile gpon all
+    // or 1 or 2 or ...
+    //return array of slots can be saved in slot entity
+    public static ArrayList<LineProfile> getLineProfileList(String commandOutput) {
+        ArrayList<LineProfile> lineProfiles = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        LineProfile lp = null;
+        for (String s : commands) {
+            if (s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
+            if (s.trim().startsWith("---- More")) {
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.trim();
+            }
+            if (s.contains("-------------------")) {
+                System.out.println("dashes bypassed");
+                continue;
+            }
+            if (s.trim().startsWith("Profile-ID")) {
+                System.out.println("header bypassed");
+                continue;
+            }
+            if (s.trim().startsWith("---- More")) {
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.trim();
+            }
+            if (s.trim().matches("[0-9].*")) {
+                String[] fields = s.trim().split("\\s+");
+                lp=new LineProfile();
+                lp.setProfileID(fields[0].trim());
+                lp.setProfileName(fields[1].trim());
+                lp.setBindingTimes(fields[2].trim());
+                lineProfiles.add(lp);
+            }
+        }
+        return lineProfiles;
+    }
+    public static ArrayList<LineProfile> testGetLineProfileList(){
+        String commandOutput = "FARDEASADI-OLT#display ont-lineprofile gpon all\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  Profile-ID  Profile-name                                Binding times\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  0           line-profile_default_0                      0\n" +
+                "  1           HG-8240                                     781\n" +
+                "  2           LineProfile-M6_01                           83\n" +
+                "  3           DATA-MPLS                                   16\n" +
+                "  4           MPLS-SIP-VLAN2000                           27\n" +
+                "  100         Residential-In-700-800_17313010             0\n" +
+                "  101         Residential-Out-700-800_17313010            1\n" +
+                "  102         Commercial-700-800_17313010                 1\n" +
+                "  900         ACS                                         114\n" +
+                "  5603        MA5603T                                     0\n" +
+                "  5612        MA-5612                                     0\n" +
+                "  5616        MA5616                                      0\n" +
+                "  5818        MA5818                                      1\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  Total: 13\n" +
+                "\n" +
+                "FARDEASADI-OLT#";
+        return getLineProfileList(commandOutput);
+    }
+    //display ont-lineprofile gpon all
+    // or 1 or 2 or ...
+    //return array of slots can be saved in slot entity
+    public static ArrayList<ServiceProfile> getServiceProfileList(String commandOutput) {
+        ArrayList<ServiceProfile> serviceProfiles = new ArrayList<>();
+        String[] commands = commandOutput.split("\n");
+        ServiceProfile sp = null;
+        for (String s : commands) {
+            if (s.trim().contains("Failure: System is busy, please retry after a while"))
+                throw new RuntimeException("OLT is busy, Try Later, received message:" + "Failure: System is busy, please retry after a while");
+            if (s.trim().startsWith("---- More")) {
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.trim();
+            }
+            if (s.contains("-------------------")) {
+                System.out.println("dashes bypassed");
+                continue;
+            }
+            if (s.trim().startsWith("Profile-ID")) {
+                System.out.println("header bypassed");
+                continue;
+            }
+            if (s.trim().startsWith("---- More")) {
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("----") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.substring(s.indexOf("[37D") + 5);
+                s = s.trim();
+            }
+            if (s.trim().matches("[0-9].*")) {
+                String[] fields = s.trim().split("\\s+");
+                sp=new ServiceProfile();
+                sp.setProfileID(fields[0].trim());
+                sp.setProfileName(fields[1].trim());
+                sp.setBindingTimes(fields[2].trim());
+                serviceProfiles.add(sp);
+            }
+        }
+        return serviceProfiles;
+    }
+    public static ArrayList<ServiceProfile> testGetServiceProfileList(){
+        String commandOutput = "FARDEASADI-OLT(config)#display ont-srvprofile gpon all\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  Profile-ID  Profile-name                                Binding times\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  0           srv-profile_default_0                       1\n" +
+                "  1           HG-8240                                     909\n" +
+                "  2           FTTH                                        1\n" +
+                "  930         ACS                                         112\n" +
+                "  -----------------------------------------------------------------------------\n" +
+                "  Total: 4";
+        return getServiceProfileList(commandOutput);
     }
 }
 

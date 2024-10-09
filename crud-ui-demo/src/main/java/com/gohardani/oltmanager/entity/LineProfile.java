@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
@@ -28,7 +29,51 @@ public class LineProfile implements Serializable {
     @Size(max=50)
     private String bindingTimes;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Olt olt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
+
+    public Olt getOlt() {
+        return olt;
+    }
+
+    public void setOlt(Olt olt) {
+        this.olt = olt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public LineProfile() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineProfile that = (LineProfile) o;
+        return Objects.equals(id, that.id) && Objects.equals(profileID, that.profileID) && Objects.equals(profileName, that.profileName) && Objects.equals(bindingTimes, that.bindingTimes) && Objects.equals(olt, that.olt) && Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, profileID, profileName, bindingTimes, olt, user);
+    }
+
+    public LineProfile(Long id, String profileID, String profileName, String bindingTimes, Olt olt, User user) {
+        this.id = id;
+        this.profileID = profileID;
+        this.profileName = profileName;
+        this.bindingTimes = bindingTimes;
+        this.olt = olt;
+        this.user = user;
     }
 
     public Long getId() {
@@ -62,20 +107,6 @@ public class LineProfile implements Serializable {
     public void setBindingTimes(@Size(max = 50) String bindingTimes) {
         this.bindingTimes = bindingTimes;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LineProfile that = (LineProfile) o;
-        return Objects.equals(id, that.id) && Objects.equals(profileID, that.profileID) && Objects.equals(profileName, that.profileName) && Objects.equals(bindingTimes, that.bindingTimes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, profileID, profileName, bindingTimes);
-    }
-
     @Override
     public String toString() {
         return "LineProfile{" +
@@ -83,6 +114,8 @@ public class LineProfile implements Serializable {
                 ", profileID='" + profileID + '\'' +
                 ", profileName='" + profileName + '\'' +
                 ", bindingTimes='" + bindingTimes + '\'' +
+                ", olt=" + olt +
+                ", user=" + user +
                 '}';
     }
 }

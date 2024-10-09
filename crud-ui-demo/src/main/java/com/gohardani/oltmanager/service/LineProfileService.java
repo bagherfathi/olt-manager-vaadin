@@ -1,6 +1,7 @@
 package com.gohardani.oltmanager.service;
 
 import com.gohardani.oltmanager.entity.LineProfile;
+import com.gohardani.oltmanager.entity.Olt;
 import com.gohardani.oltmanager.repository.LineProfileRepository;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,5 @@ public class LineProfileService {
     public void delete(LineProfile lineprofile) {
         lineProfileRepository.delete(lineprofile);
     }
-
-
+    public void deleteByOlt(Olt olt) {lineProfileRepository.deleteByOltEquals(olt);}
 }
