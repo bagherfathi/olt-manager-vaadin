@@ -17,4 +17,5 @@ public interface OntUnregisteredRepository extends JpaRepository<OntUnregistered
     @Modifying
     @Transactional
     void deleteByOltEquals(Olt olt);
+    List<OntUnregistered> findByOltEquals(Olt olt);
 }

@@ -33,4 +33,5 @@ public class LineProfileService {
         lineProfileRepository.delete(lineprofile);
     }
     public void deleteByOlt(Olt olt) {lineProfileRepository.deleteByOltEquals(olt);}
+    public List<LineProfile> findByOltEquals(Olt olt) {return lineProfileRepository.findByOltEquals(olt);}
 }

@@ -31,4 +31,5 @@ public class ServiceProfileService {
     }
     public void delete(ServiceProfile serviceProfile) {serviceProfileRepository.delete(serviceProfile);}
     public void deleteByOlt(Olt olt) {serviceProfileRepository.deleteByOltEquals(olt);}
+    public List<ServiceProfile> findByOltEquals(Olt olt) {return serviceProfileRepository.findByOltEquals(olt);}
 }

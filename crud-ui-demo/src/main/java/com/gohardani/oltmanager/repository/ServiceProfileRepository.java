@@ -13,4 +13,5 @@ public interface ServiceProfileRepository extends JpaRepository<ServiceProfile, 
     @Modifying
     @Transactional
     void deleteByOltEquals(Olt olt);
+    List<ServiceProfile> findByOltEquals(Olt olt);
 }

@@ -13,4 +13,5 @@ public interface LineProfileRepository extends JpaRepository<LineProfile, Long> 
     @Modifying
     @Transactional
     void deleteByOltEquals(Olt olt);
+    List<LineProfile> findByOltEquals(Olt olt);
 }

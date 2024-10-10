@@ -44,4 +44,5 @@ public class OntUnregisteredService {
     public void saveAll(List<OntUnregistered> ontUnregisteredList) {
         ontUnregisteredRepository.saveAll(ontUnregisteredList);
     }
+    public List<OntUnregistered> findByOltEquals(Olt olt) {return ontUnregisteredRepository.findByOltEquals(olt);}
 }
