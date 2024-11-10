@@ -2,7 +2,6 @@ package com.gohardani.oltmanager.ui.view;
 
 import com.gohardani.oltmanager.entity.Area;
 import com.gohardani.oltmanager.entity.Center;
-import com.gohardani.oltmanager.entity.OltType;
 import com.gohardani.oltmanager.service.AreaService;
 import com.gohardani.oltmanager.service.CenterService;
 import com.gohardani.oltmanager.ui.MainLayout;
@@ -16,10 +15,10 @@ import org.vaadin.crudui.crud.impl.GridCrud;
 import org.vaadin.crudui.form.impl.field.provider.ComboBoxProvider;
 
 @RolesAllowed({"ADMIN","USER"})
-@Route(value = "service", layout = MainLayout.class)
-public class ServiceView extends VerticalLayout {
+@Route(value = "center", layout = MainLayout.class)
+public class CenterView extends VerticalLayout {
 
-    public ServiceView(CenterService centerService, AreaService areaService) {
+    public CenterView(CenterService centerService, AreaService areaService) {
         // crud instance
         GridCrud<Center> crud = new GridCrud<>(Center.class);
 
